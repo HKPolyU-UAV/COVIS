@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+
+<!--Input######################################################################################################-->
+    <node pkg="rosbag" type="play" name="rosbag2" args="$(find covis)/bag/agent2.bag -s1 -r2"/> -->
+
+<!--COVIS######################################################################################################-->
+<group ns="Agent2">
+    <arg name="node_start_delay"  default="1.0" />
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/d435i/d435_depth.yaml"/>
+    <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3"/>
+    <!-- Agent param -->
+    <param name="~AgentId"        type="int"    value="2"/>
+    <param name="~AgentFrameId"   type="string" value="odom2" /> 
+    <param name="~MapTopicName"   type="string" value="Map2"/>
+
+    <!-- TF  -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC2_broadcaster" args="20 -15 0 -3.1415 0 0 map odom2" />
+
+    <!-- Manager -->
+    <node pkg="nodelet" type="nodelet"
+          name="covis_nodelet_manager" args="manager" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+          <param name="num_worker_threads" value="4" />
+    </node>
+
+    <!-- TrackingNode -->
+    <node pkg="nodelet" type="nodelet" args="load covis/TrackingNodeletClass covis_nodelet_manager"
+        name="TrackingNodeletClass_loader" output="screen"
+        launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">-->
+        <!-- D435i -->
+        <remap from="/vo/input_image_0"  to="/Agent2/camera/infra1/image_rect_raw"/>
+        <remap from="/vo/input_image_1"  to="/Agent2/camera/depth/image_rect_raw"/>
+        <remap from="/imu"               to="/Agent2/camera/imu"/> 
+    </node> -->
+
+  </group>
+</launch>

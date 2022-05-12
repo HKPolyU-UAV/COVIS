@@ -1,0 +1,30 @@
+<library path="lib/libcovis">
+
+        <class name="covis/TrackingNodeletClass" type="covis_ns::TrackingNodeletClass"
+		base_class_type="nodelet::Nodelet">
+		<description>
+                        TrackingNodeletClass.
+		</description>
+	</class>
+
+        <class name="covis/LocalMapNodeletClass" type="covis_ns::LocalMapNodeletClass"
+		base_class_type="nodelet::Nodelet">
+		<description>
+                        LocalMapNodeletClass.
+		</description>
+	</class>
+
+        <class name="covis/LoopClosingNodeletClass" type="covis_ns::LoopClosingNodeletClass"
+                base_class_type="nodelet::Nodelet">
+                <description>
+                        LoopClosingNodeletClass.
+                </description>
+        </class>
+
+        <class name="covis/MergingNodeletClass" type="covis_ns::MergingNodeletClass"
+                base_class_type="nodelet::Nodelet">
+                <description>
+                        MergingNodeletClass.
+                </description>
+        </class>
+</library>

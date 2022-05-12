@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node type="rviz" name="rviz_server" pkg="rviz" args="-d $(find covis)/launch/rviz/Server.rviz" />
+</launch>

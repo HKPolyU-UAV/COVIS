@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<launch>
+
+<!--Input######################################################################################################-->
+    <param name="/dataset_pub_delay"      type="double"  value="5.0" />
+    <param name="/dataset_pub_rate"       type="int"     value="40" />
+
+    <param name="/publish_gt"             type="bool"    value="true" />
+    <param name="/dataset_folder_path"    type="string"  value="$(find covis)/bag/KITTI/dataset/sequences/00/" />
+    <param name="/dataset_gt_file"        type="string"  value="$(find covis)/bag/KITTI/dataset/poses/00.txt" />
+    <node pkg="covis" type="kitti_publisher" name="kitti_publisher" output="screen"/>
+
+<!--covis######################################################################################################-->
+<group ns="Agent0">
+    <arg name="node_start_delay"  default="1.0" />
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/KITTI/KITTI.yaml"/>
+    <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3"/>
+
+    <!-- Agent param -->
+    <param name="~AgentId"        type="int"    value="0"/>
+    <param name="~AgentFrameId"   type="string" value="odom0" /> 
+    <param name="~MapTopicName"   type="string" value="Map0"/>
+
+    <!-- TF  -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC0_broadcaster" args="0 0 0 0 0 0 map odom0" />
+
+    <!-- Manager -->
+    <node pkg="nodelet" type="nodelet"
+          name="covis_nodelet_manager" args="manager" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+          <param name="num_worker_threads" value="4" />
+    </node>
+
+    <!-- TrackingNode -->
+    <!-- D435i -->
+    <node pkg="nodelet" type="nodelet" args="load covis/TrackingNodeletClass covis_nodelet_manager"
+        name="TrackingNodeletClass_loader" output="screen"
+        launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+        <remap from="/imu"               to="/camera/imu"/>
+    </node>-
+
+    <!-- LocalMapNode -->
+    <!--window_size: Num of keyframes in sliding window optimizer-->
+<!--    <node pkg="nodelet" type="nodelet" args="load covis/LocalMapNodeletClass covis_nodelet_manager"
+          name="LocalMapNodeletClass_loader" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+        <param name="/window_size" type="int" value="8" />
+    </node>-->
+
+
+    <!-- MergingNode -->
+<!--     <node pkg="nodelet" type="nodelet" args="load covis/MergingNodeletClass covis_nodelet_manager"
+        name="MergingNodeletClass_loader" output="screen"
+        launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+    </node>-->
+
+<node pkg="covis" type="vo_repub_rec" name="lc2file" output="screen">
+    <!--Sub Support Type:-->
+    <param name="sub_type" type="string" value="NavPath" />
+    <param name="sub_topic" type="string" value="/vision_path_lc_all" />
+
+    <!--Support Type:-->
+    <!--"0" disable the republish function -->
+    <!--"Path"-->
+    <!--"PoseStamped"-->
+    <param name="repub_type" type="string" value="0" />
+    <param name="repub_topic" type="string" value="/republish_path" />
+    <!--output_file_path = "0" disable the file output function-->
+    <param name="output_file_path" type="string" value="$(find covis)/results/kitti_lc.txt" />
+</node>
+
+ </group>
+</launch>
