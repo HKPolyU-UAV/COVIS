@@ -68,12 +68,12 @@ cam0_distortion_coeffs: [0.0, 0.0, 0.0, 0.0]#k1 k2 r1 r2
 ```
 In the launch file ````covis_C0.launch````, make sure ````/yamlconfigfile```` is point to the edited config file
 ````
-<param name="/yamlconfigfile" type="string" value="$(find flvis)/launch/d435i/sn943222072828_depth.yaml"/>
+<param name="/yamlconfigfile" type="string" value="$(find covis)/launch/d435i/d435_depth.yaml"/>
 ````
 run the following launch files:
 ````
-roslaunch flvis rviz_bag.launch
-roslaunch flvis flvis_d435i_depth.launch
+roslaunch covis rviz_bag.launch
+roslaunch covis covis_d435i_depth.launch
 ````
 #### 5.2 D435i Camera Stero Mode
 Like what we did in 5.1.2, we need to config the `sn943222072828_stereo.yaml` <br />
@@ -94,39 +94,36 @@ T_cam0_cam1:
 #### 5.3 EuRoC MAV Dataset
 Download the dataset(say MH_05_difficult) into the bag folder:
 ````
-roscd flvis/bag/
+roscd covis/bag/
 wget http://robotics.ethz.ch/~asl-datasets/ijrr_euroc_mav_dataset/machine_hall/MH_05_difficult/MH_05_difficult.bag
 ````
-Edit the corresponding bag name in `flvis_euroc_mav.launch` file:
+Edit the corresponding bag name in `covis_euroc_mav.launch` file:
 ````
-<node pkg="rosbag" type="play" name="rosbag" args="$(find flvis)/bag/MH_05_difficult.bag"/>
+<node pkg="rosbag" type="play" name="rosbag" args="$(find covis)/bag/MH_05_difficult.bag"/>
 ````
 run the following launch files:
 ````
-roslaunch flvis rviz_euroc.launch
-roslaunch flvis flvis_euroc_mav.launch
+roslaunch covis rviz_euroc.launch
+roslaunch covis covis_euroc_mav.launch
 ````
 
 #### 5.4 KITTI Dataset
 Download the dataset into the bag folder:
 
-<img src="https://github.com/Ttoto/img_bed/blob/main/FLVIS/kitti_sc.png" width="250"> 
+<img src="https://github.com/Ttoto/img_bed/blob/main/COVIS/kitti_sc.png" width="250"> 
 
-Decompress `poses.zip` file and edit the corresponding bag name in `flvis_kitti.launch` file:
+Decompress `poses.zip` file and edit the corresponding bag name in `covis_kitti.launch` file:
 ````
 <param name="/publish_gt"             type="bool"    value="true" />
-<param name="/dataset_folder_path"    type="string"  value="$(find flvis)/bag/KITTI/dataset/sequences/00/" />
-<param name="/dataset_gt_file"        type="string"  value="$(find flvis)/bag/KITTI/dataset/poses/00.txt" />
+<param name="/dataset_folder_path"    type="string"  value="$(find covis)/bag/KITTI/dataset/sequences/00/" />
+<param name="/dataset_gt_file"        type="string"  value="$(find covis)/bag/KITTI/dataset/poses/00.txt" />
 ````
 run the following launch files:
 ````
-roslaunch flvis rviz_kitti.launch
-roslaunch flvis flvis_kitti.launch
+roslaunch covis rviz_kitti.launch
+roslaunch covis covis_kitti.launch
 ````
-If tracking failure or optimize failure happen, please try a lower dataset publish rate 10 or 15 instead:
-````
-<param name="/dataset_pub_rate"       type="int"     value="15" />
-````
+
 
 ### Maintainer:
 [Shengyang Chen](https://www.polyu.edu.hk/researchgrp/cywen/index.php/en/people/alumni.html)(Dept.ME,PolyU): shengyang.chen@connect.polyu.hk <br />
