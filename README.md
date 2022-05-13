@@ -9,8 +9,8 @@ Collaborative Outlier-free Visual Inertial SLAM system
 
 ### 3-Support Hardware/Dataset:
 Intel RealSense Camera <br />
-EuRoC MAV Dataset
-KITTI Dataset
+EuRoC MAV Dataset <br />
+KITTI Dataset <br />
 
 ### 4-Build The Project
 We have tested in the following environment: <br />
