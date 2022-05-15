@@ -1,26 +1,30 @@
 #include "include/merging.h"
 
-Merging::Merging(ros::NodeHandle &nh, LC_PARAS &lc_paras,DBoW3::Vocabulary &voc, DBoW3::Database &db,
-                 DepthCamera &dc, int saveimg_flag, int number, bool Intra):
-  lc_paras(lc_paras), voc(voc), db(db), dc(dc), SAVE_IMG(saveimg_flag), IntraLoop(Intra)
+Merging::Merging(ros::NodeHandle &nh, LC_PARAS &paras,DBoW3::Vocabulary &voc, DBoW3::Database &db,
+                 DepthCamera &dc, int save_flag_, int number, bool Intra):
+  lc_paras(paras), voc(voc), db(db), dc(dc), SAVE_IMG(save_flag_), IntraLoop(Intra)
 {
   number_of_Agent = static_cast<size_t>(number);
   ROS_WARN("Total number of Agent: %lu ", number_of_Agent);
   ROS_WARN("loop detection threshold: %f ", lc_paras.minScore);
+  ROS_WARN("loop detection begin ID: %d ", lc_paras.lcKFStart);
   ROS_WARN("SaveImg: %d ", SAVE_IMG);
   ROS_WARN("IntraLoop: %d ", IntraLoop);
 
   // global path
   globalpaths_.resize(number_of_Agent);
-  for(size_t i = 0; i < number_of_Agent; i++)
-    globalpaths_[i] = new RVIZPath(nh, "/global_path_"+to_string(i), "map", 1, 10000);
+  dronepub_.resize(number_of_Agent);
+  for(size_t i = 0; i < number_of_Agent; i++){
+    globalpaths_[i] = new RVIZPath(nh, "/Server/global_path_"+to_string(i), "map", 1, 10000);
+    dronepub_[i]    = new RVIZMesh(nh, "/Server/global_drone_"+to_string(i), "map", 1000);
+  }
 
-  // inter-agent edge
-  edge_merge_pub  = new RVIZEdge(nh, "/merge_edge", "map", 10000);
+  // inter-and-intra agent edge
+  edge_merge_pub  = new RVIZEdge(nh, "/Server/merge_edge", "map", 10000);
 
   // inter-agent matched image
   image_transport::ImageTransport it(nh);
-  merge_Img_pub = it.advertise("/merge_img",1);
+  merge_Img_pub = it.advertise("/Server/merge_img",1);
 
   m_drift.lock();
   for (size_t i = 0; i < number_of_Agent; i++){
@@ -308,7 +312,8 @@ void Merging::setKeyFrameMerge(const covis::KeyFrameConstPtr& msg)
   //cout << "latest kf: " << kf_ptr->keyframe_id << endl;
 
   m_path.lock();
-  pubGlobalPath(kf_ptr);
+  globalpaths_[kf_ptr->AgentId_]->pubPathT_w_c((kf.T_c_w_global).inverse(),kf.t, kf_ptr->AgentId_);
+  dronepub_[kf_ptr->AgentId_]->PubT_w_c(kf.T_c_w_global.inverse(), kf_ptr->t, kf_ptr->AgentId_);
   m_path.unlock();
 
   kfs_all.push_back(kf_ptr);
@@ -446,7 +451,7 @@ int Merging::AddandDetectLoop(shared_ptr<KeyFrameMerge> kf)
     }
   }
 
-  if(find_loop && kf->keyframe_id > 0)
+  if(find_loop && kf->keyframe_id > lc_paras.lcKFStart)
   {
     int min_index = -1;
     for(int i = 0; i < ret.size(); i++)
@@ -561,7 +566,7 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf0, shared_ptr<KeyFrame
     //SE3 se_ij
     se_ji = SE3_from_rvec_tvec(r_,t_);
 
-    if(se_ji.translation().norm() < 10 && se_ji.so3().log().norm() < 10)
+    if(se_ji.translation().norm() < 3 && se_ji.so3().log().norm() < 1.5)
     {
       is_lc = true;
     }
@@ -696,7 +701,7 @@ void Merging::updateGlobalPose(shared_ptr<KeyFrameMerge> kf_loop, shared_ptr<Key
     for(size_t i = 0; i < kfs_all.size(); i++)
     {
       auto kf = kfs_all[i];
-      pubGlobalPath(kf);
+      globalpaths_[kf->AgentId_]->pubPathT_w_c((kf->T_c_w_global).inverse(),kf->t, kf->AgentId_);
     }
     m_path.unlock();
 
@@ -830,9 +835,9 @@ void Merging::PoseGraphOptimization()
     }
 
   }
-  //  for(auto id:loop_ids){
-  //    cout << id.transpose() << endl;
-  //  }
+    for(auto id:loop_ids){
+      cout << id.transpose() << endl;
+    }
   //  cout << "earliest index: " << kf_prev_idx << endl;
   //  cout << "current index: " << kf_curr_idx << endl;
 
@@ -982,7 +987,7 @@ void Merging::PoseGraphOptimization()
   optimizer.computeActiveErrors();
   optimizer.optimize(5);
 
-  optimizer.save("/home/yurong/covis_after.g2o");
+  //optimizer.save("/home/yurong/covis_after.g2o");
 
 
   m_vector.lock();
@@ -1060,8 +1065,7 @@ void Merging::PoseGraphOptimization()
   {
     //cout << "recover: " << i << endl;
     shared_ptr<KeyFrameMerge> kf = kfs_all[i];
-    pubGlobalPath(kf);
-
+    globalpaths_[kf->AgentId_]->pubPathT_w_c((kf->T_c_w_global).inverse(),kf->t, kf->AgentId_);
   }
   m_path.unlock();
   m_vector.unlock();
@@ -1084,35 +1088,6 @@ void Merging::PoseGraphOptimization()
 
 }
 
-
-
-void Merging::pubGlobalPath(shared_ptr<KeyFrameMerge> kf)
-{
-  //  for(int i = 0; i<globalpaths_.size(); i++)
-  //  {
-
-  //  }
-  switch(kf->AgentId_)
-  {
-  case(0):
-  {
-    globalpaths_[0]->pubPathT_w_c((kf->T_c_w_global).inverse(),kf->t);
-    break;
-  }
-  case(1):
-  {
-    globalpaths_[1]->pubPathT_w_c((kf->T_c_w_global).inverse(),kf->t);
-    break;
-  }
-  case(2):
-  {
-    globalpaths_[2]->pubPathT_w_c((kf->T_c_w_global).inverse(),kf->t);
-    break;
-  }
-  }
-
-
-}
 #if 0
 
 void Merging::expandGraph()

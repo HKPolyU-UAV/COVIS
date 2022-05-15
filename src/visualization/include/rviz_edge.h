@@ -2,6 +2,7 @@
 #define RVIZ_EDGE_H
 #include <ros/ros.h>
 #include <include/common.h>
+#include <include/yamlRead.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
 class RVIZEdge
@@ -9,17 +10,18 @@ class RVIZEdge
 private:
 
     ros::Publisher edge_pub;
-    string frame_id;
+    string GlobalframeId;
     std::vector<visualization_msgs::Marker> markers;
     size_t AgentId_;
     string AgentFrameId;
 
+    double marker_scale = 1.0;
 
 public:
     RVIZEdge();
     ~RVIZEdge();
     RVIZEdge(ros::NodeHandle& nh,
-             string topicName, string frameId,
+             string topicName, string GlobalframeId,
              int bufferSize=2);
 //    RVIZEdge(ros::NodeHandle& nh,
 //             string topicName, size_t &AgentId_, string &AgentFrameId,

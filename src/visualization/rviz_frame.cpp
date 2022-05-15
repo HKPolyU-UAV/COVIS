@@ -1,7 +1,7 @@
 #include "include/rviz_frame.h"
 
 /** @brief Publish in server frame
-
+Not used
 */
 RVIZFrame::RVIZFrame(ros::NodeHandle& nh,
                      string poseTopicName, string frameIDPose,

@@ -8,8 +8,8 @@ KeyFrameMsg::KeyFrameMsg()
 KeyFrameMsg::KeyFrameMsg(ros::NodeHandle &nh, string topic_name, size_t AgentId_, int buffersize)
 {
     this->AgentId_ = AgentId_;
-    kf_pub = nh.advertise<covis::KeyFrame>("/Agent" +to_string(AgentId_)+topic_name,1);
-    kf_merge_pub = nh.advertise<covis::KeyFrame>("/Agent" +to_string(AgentId_)+"/Map_kf",1);
+    kf_pub = nh.advertise<covis::KeyFrame>("/Agent" +to_string(AgentId_)+topic_name,1);      // deprecated api for local map
+    kf_merge_pub = nh.advertise<covis::KeyFrame>("/Agent" +to_string(AgentId_)+"/Map_kf",1); // for map merge and loop closure
 
 }
 

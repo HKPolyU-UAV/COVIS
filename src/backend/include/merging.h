@@ -18,7 +18,8 @@
 #include <include/tic_toc_ros.h>
 #include <include/rviz_path.h>
 #include <include/rviz_edge.h>
-#include <include/rviz_pose.h>
+//#include <include/rviz_odom.h>
+#include <include/rviz_mesh.h>
 #include <include/kinetic_math.h>
 
 //OPENCV
@@ -118,7 +119,7 @@ typedef std::pair<size_t, int> idpair;
 class Merging{
 public:
     Merging(ros::NodeHandle &nh, LC_PARAS &lc_paras,
-                DBoW3::Vocabulary &voc, DBoW3::Database &db, DepthCamera &dc, int saveimg_flag=0, int number_of_Agent=1, bool IntraLoop=false) ;
+                DBoW3::Vocabulary &voc, DBoW3::Database &db, DepthCamera &dc, int save_flag_=0, int number_of_Agent=1, bool IntraLoop=false) ;
     void setKeyFrameMerge(const covis::KeyFrameConstPtr& msg);
 
 
@@ -127,8 +128,10 @@ private:
     ros::Subscriber sub_kf;
     image_transport::Publisher merge_Img_pub;   // publish matching keyframe
     RVIZEdge* edge_merge_pub; // visualize edge between merged pose
-    RVIZPose* pose_pub;
+    //RVIZPose* pose_pub;
     vector<RVIZPath*> globalpaths_;
+    vector<RVIZMesh*> dronepub_;
+
     tf2_ros::TransformBroadcaster br;
 
     DepthCamera dc;
@@ -208,7 +211,7 @@ private:
     bool isLoopClosureKF(shared_ptr<KeyFrameMerge> kf0, shared_ptr<KeyFrameMerge> kf1, SE3 &se_ji);
     void updateGlobalPose(shared_ptr<KeyFrameMerge> kf0, shared_ptr<KeyFrameMerge> kf1, SE3 &se_ji);
     bool add_Loop_check(shared_ptr<KeyFrameMerge> kf0, shared_ptr<KeyFrameMerge> kf1, SE3 &loop_pose);
-    void pubGlobalPath(shared_ptr<KeyFrameMerge> kf);
+
 
     void expandGraph();
     void sim_mat_update();

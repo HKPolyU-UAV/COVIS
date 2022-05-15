@@ -22,6 +22,8 @@
 #include <include/rviz_path.h>
 #include <include/rviz_pose.h>
 #include <include/rviz_odom.h>
+#include <include/rviz_mesh.h>
+
 
 #include <include/yamlRead.h>
 #include <include/cv_draw.h>
@@ -83,6 +85,7 @@ private:
   RVIZPath*  path_imu_pub;
 
   KeyFrameMsg* kf_pub;
+  RVIZMesh*    drone_pub;
   tf::StampedTransform tranOdomMap;
   tf::TransformListener listenerOdomMap;
 
@@ -103,12 +106,13 @@ private:
 
     //Publisher
     frame_pub_agent = new RVIZFrame(nh,"/vo_camera_pose","/vo_curr_frame", AgentId_, AgentFrameId);
-    vision_path_pub = new RVIZPath(nh,"/vision_path", AgentId_, AgentFrameId);
+    vision_path_pub = new RVIZPath(nh,"/vision_path", AgentId_, AgentFrameId);    // pub vio path
     path_lc_pub     = new RVIZPath(nh,"/vision_path_lc", AgentId_, AgentFrameId);
-    pose_imu_pub    = new RVIZPose(nh,"/imu_pose", AgentId_, AgentFrameId);
-    odom_imu_pub    = new RVIZOdom(nh,"/imu_odom", AgentId_, AgentFrameId);
-    path_imu_pub    = new RVIZPath(nh,"/imu_path", AgentId_, AgentFrameId);
+    pose_imu_pub    = new RVIZPose(nh,"/imu_pose", AgentId_, AgentFrameId);   // pub imu pose
+    odom_imu_pub    = new RVIZOdom(nh,"/imu_odom", AgentId_, AgentFrameId);   // pub imu odom
+    path_imu_pub    = new RVIZPath(nh,"/imu_path", AgentId_, AgentFrameId);   // pub imu path
     kf_pub          = new KeyFrameMsg(nh, "/vo_kf", AgentId_);
+    drone_pub       = new RVIZMesh(nh, "/drone", AgentId_, AgentFrameId); // visualize by mesh
 
     image_transport::ImageTransport it(nh);
 
@@ -120,7 +124,7 @@ private:
     //Load Parameter
     string configFilePath;
     nh.getParam("/yamlconfigfile",   configFilePath);
-    ROS_INFO_STREAM("VO YAML configFilePath: " << configFilePath);
+    ROS_WARN_STREAM("VO YAML configFilePath: " << configFilePath);
 
     auto severity = getIntVariableFromYaml(configFilePath, "LogLevel");
     if(severity == 0)
@@ -389,7 +393,7 @@ private:
                           q_w_i,pos_w_i,vel_w_i);
     pose_imu_pub->pubPose(q_w_i,pos_w_i,tstamp);
     odom_imu_pub->pubOdom(q_w_i,pos_w_i,vel_w_i,tstamp);
-    path_imu_pub->pubPathT_w_c(SE3(q_w_i,pos_w_i),tstamp);
+    path_imu_pub->pubPathT_w_c(SE3(q_w_i,pos_w_i),tstamp, AgentId_);
   }
 
   void correction_feedback_callback(const covis::CorrectionInf::ConstPtr& msg)
@@ -456,7 +460,9 @@ private:
               frame_pub_agent->pubFramePtsPoseT_c_w(this->cam_tracker->curr_frame->getValid3dPts(),
                                               this->cam_tracker->curr_frame->T_c_w,
                                               tstamp);
-              vision_path_pub->pubPathT_c_w(this->cam_tracker->curr_frame->T_c_w,tstamp);
+              vision_path_pub->pubPathT_c_w(this->cam_tracker->curr_frame->T_c_w, tstamp, AgentId_);
+              drone_pub->PubT_w_c(this->cam_tracker->curr_frame->T_c_w.inverse(), tstamp, AgentId_);
+
               SE3 T_map_c =SE3();
               try{
                 listenerOdomMap.lookupTransform("map","odom",ros::Time(0), tranOdomMap);
@@ -465,7 +471,7 @@ private:
                 SE3 T_map_odom(Quaterniond(tf_q.w(),tf_q.x(),tf_q.y(),tf_q.z()),
                                Vec3(tf_t.x(),tf_t.y(),tf_t.z()));
                 T_map_c = T_map_odom*this->cam_tracker->curr_frame->T_c_w.inverse();
-                path_lc_pub->pubPathT_w_c(T_map_c,tstamp);
+                path_lc_pub->pubPathT_w_c(T_map_c,tstamp, AgentId_);
               }
               catch (tf::TransformException ex)
               {

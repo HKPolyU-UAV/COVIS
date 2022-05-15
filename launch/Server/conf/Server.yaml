@@ -64,7 +64,7 @@ window_size:       8
 
 #LoopClosureTheread
 #define lcKFStart
-lcKFStart: 75
+lcKFStart: 0
 #define lcKFDist
 lcKFDist: 18
 #define lcKFMaxDist

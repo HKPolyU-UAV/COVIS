@@ -110,6 +110,7 @@ add_library(covis
     src/visualization/rviz_pose.cpp
     src/visualization/rviz_odom.cpp
     src/visualization/rviz_edge.cpp
+    src/visualization/rviz_mesh.cpp
     #msg
     src/utils/keyframe_msg.cpp
     src/utils/correction_inf_msg.cpp

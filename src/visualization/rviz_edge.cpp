@@ -7,11 +7,16 @@ RVIZEdge::RVIZEdge(){
 RVIZEdge::~RVIZEdge(){
 
 }
+/** @brief Publish in Server frame
 
-RVIZEdge::RVIZEdge(ros::NodeHandle& nh, string topicName, string frameId, int bufferSize)
+*/
+RVIZEdge::RVIZEdge(ros::NodeHandle& nh, string topicName, string GlobalframeId, int bufferSize)
 {
+    string configFilePath;
+    nh.getParam("/yamlconfigfile", configFilePath);
+    marker_scale     = getDoubleVariableFromYaml(configFilePath,"EdgeScale");
     edge_pub = nh.advertise<visualization_msgs::MarkerArray>(topicName, bufferSize);
-    frame_id = frameId;
+    this->GlobalframeId = GlobalframeId;
 
 
 }
@@ -37,7 +42,7 @@ RVIZEdge::RVIZEdge(ros::NodeHandle& nh,
 void RVIZEdge::AddLoopEdge(SE3 from, SE3 to, ros::Time t_to)
 {
   visualization_msgs::Marker marker;
-  marker.header.frame_id = frame_id;
+  marker.header.frame_id = this->GlobalframeId;
   marker.header.stamp = t_to;
   marker.ns = "LoopEdges";
   marker.id = markers.size() + 1; //unique identifier of Loop Edge
@@ -46,7 +51,7 @@ void RVIZEdge::AddLoopEdge(SE3 from, SE3 to, ros::Time t_to)
   marker.lifetime = ros::Duration();
 
   marker.pose.orientation.w = 1.0;
-  marker.scale.x = 0.03;
+  marker.scale.x = marker_scale;
 
   std_msgs::ColorRGBA white, green;
   white.r = 1.0;
@@ -89,7 +94,7 @@ void RVIZEdge::PubEdge()
   }
 
   edge_pub.publish(marker_array);
-  cout << "pub marker size: " << markers.size() << endl;
+  cout << "pub loop edge size: " << markers.size() << endl;
 
 }
 void RVIZEdge::clearEdge()

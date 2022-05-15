@@ -7,7 +7,7 @@
     <include file="$(find covis)/launch/d435i/d435i_depth.launch"/>
     <!-- All node param-->
     <arg name="node_start_delay"  default="1.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/d435i/d435_depth.yaml"/>
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/d435i/d435i_depth.yaml"/>
     <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3"/>
     <!-- Agent param -->
     <param name="~AgentId"        type="int"    value="0"/>

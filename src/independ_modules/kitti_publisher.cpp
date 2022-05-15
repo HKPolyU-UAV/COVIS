@@ -109,7 +109,7 @@ int main(int argc, char **argv)
           pose_elements[4], pose_elements[5], pose_elements[6],  pose_elements[7],
           pose_elements[8], pose_elements[9], pose_elements[10], pose_elements[11];
       SE3 pose(SO3(T.topLeftCorner(3,3)),T.topRightCorner(3,1));
-      path_pub->pubPathT_w_c(T_w_c*pose);
+      path_pub->pubPathT_w_c(T_w_c*pose, ros::Time::now()); // it should ADD agentId for multi agent test!
     }
     std::stringstream filename_tmp;
     filename_tmp << std::setw(6) << std::setfill('0') << img_cnt;

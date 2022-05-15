@@ -4,7 +4,9 @@ RVIZOdom::RVIZOdom()
 {
 
 }
+/** @brief Publish in Server frame
 
+*/
 RVIZOdom::RVIZOdom(ros::NodeHandle& nh,
                    string topicName, string frameId,
                    int bufferSize)
@@ -12,6 +14,9 @@ RVIZOdom::RVIZOdom(ros::NodeHandle& nh,
   odom_pub = nh.advertise<nav_msgs::Odometry>(topicName, bufferSize);
   this->odom.header.frame_id = frameId;
 }
+/** @brief Publish in Agent frame
+
+*/
 RVIZOdom::RVIZOdom(ros::NodeHandle& nh,
                    string topicName,size_t &AgentId_, string &AgentFrameId,
                    int bufferSize)

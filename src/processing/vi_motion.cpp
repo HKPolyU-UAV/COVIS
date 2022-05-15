@@ -486,7 +486,7 @@ bool VIMOTION::viGetCorrFrameState(const double time, SE3 &T_c_w)
   this->mtx_states_RW.unlock();
   return ret;
 }
-/** @brief Roll and pitch feedforward.
+/** @brief Roll and pitch feedforward. IMU orientation has no drift on roll and pitch, used to compensate drift of camera
 @param time. Timestamp of cam0
 @param T_c_w. Pose of cam0 to be updated
 */

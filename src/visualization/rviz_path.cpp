@@ -1,7 +1,9 @@
 #include <include/rviz_path.h>
 
+/** @brief Publish in Server frame
 
-RVIZPath::RVIZPath(ros::NodeHandle& nh, string topic_name, string frame_id, int bufferCount, int maxNumOfPose)
+*/
+RVIZPath::RVIZPath(ros::NodeHandle& nh, string topic_name, string GlobalFrameId, int bufferCount, int maxNumOfPose)
 {
   path_pub = nh.advertise<nav_msgs::Path>(topic_name, bufferCount);
   if(maxNumOfPose==-1)
@@ -11,11 +13,13 @@ RVIZPath::RVIZPath(ros::NodeHandle& nh, string topic_name, string frame_id, int 
   {
     numOfPose = maxNumOfPose;
   }
-  this->frame_id_path = frame_id;
-  path.header.frame_id = frame_id_path;
-
+  this->GlobalFrameId = GlobalFrameId;
+  path.header.frame_id = this->GlobalFrameId;
+  is_Server = true;
 }
+/** @brief Publish in Agent frame
 
+*/
 
 RVIZPath::RVIZPath(ros::NodeHandle& nh, string topic_name, size_t AgentId_, string AgentFrameId, int bufferCount, int maxNumOfPose)
 {
@@ -35,22 +39,25 @@ RVIZPath::RVIZPath(ros::NodeHandle& nh, string topic_name, size_t AgentId_, stri
   {
     numOfPose = maxNumOfPose;
   }
-  this->frame_id_path = this->AgentFrameId;
-  path.header.frame_id = frame_id_path;
+  path.header.frame_id = this->AgentFrameId;
   delete ss;
-
+  is_Server = false;
 }
 
 
-void RVIZPath::pubPathT_c_w(const SE3 T_c_w, const ros::Time stamp)
+void RVIZPath::pubPathT_c_w(const SE3 T_c_w, const ros::Time stamp, size_t AgentId)
 {
-  pubPathT_w_c(T_c_w.inverse(),stamp);
+  pubPathT_w_c(T_c_w.inverse(),stamp, AgentId);
 }
 
-void RVIZPath::pubPathT_w_c(const SE3 T_w_c, const ros::Time stamp)
+void RVIZPath::pubPathT_w_c(const SE3 T_w_c, const ros::Time stamp, size_t AgentId)
 {
   geometry_msgs::PoseStamped poseStamped;
-  poseStamped.header.frame_id =frame_id_path;
+  if(is_Server)
+     poseStamped.header.frame_id = this->GlobalFrameId;
+  else
+     poseStamped.header.frame_id = this->AgentFrameId;
+
   poseStamped.header.stamp    = stamp;
 
   Quaterniond q = T_w_c.so3().unit_quaternion();

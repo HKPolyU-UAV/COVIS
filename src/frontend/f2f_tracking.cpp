@@ -29,7 +29,7 @@ void F2FTracking::init(const DepthCamera dc_in,
 
     this->iir_ratio = static_cast<float>(dc_para(0));
     this->range = static_cast<float>(dc_para(1));
-    ROS_WARN("depth range: %f ",  this->range);
+    //ROS_WARN("depth range: %f ",  this->range);
     if(dc_para(2)<0.5)
     {
         this->enable_dummy = false;
@@ -224,7 +224,7 @@ void F2FTracking::image_feed(const double time,
         SE3  imu_guess;
         bool has_imu_guess=false;
         if(this->has_imu)
-            has_imu_guess = this->vimotion->viGetCorrFrameState(time,imu_guess);
+            has_imu_guess = this->vimotion->viGetCorrFrameState(curr_frame->frame_time,imu_guess); // time of camera to find IMU state
         bool tracking_success;
         tracking_success = lkorb_tracker->tracking(*last_frame,
                                                    *curr_frame,
@@ -369,7 +369,7 @@ void F2FTracking::image_feed(const double time,
         if((cnt%3)==0)
         {
             ROS_WARN_STREAM("vision tracking fail, IMU motion only" << "\n" << "Tring to recover~");
-            if(this->vimotion->viGetCorrFrameState(curr_frame->frame_time,curr_frame->T_c_w))
+            if(this->vimotion->viGetCorrFrameState(curr_frame->frame_time,curr_frame->T_c_w)) // try to recover in short duration
             {
                 if(this->init_frame())
                 {
