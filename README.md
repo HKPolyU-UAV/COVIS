@@ -44,7 +44,7 @@ run ````rviz```` and launch ````Server````:
 roslaunch covis rviz_Server.launch 
 roslaunch covis Server.launch 
 ````
-run client0 and client1 in different terminal:
+run ````client0```` and ````client1```` in different terminal:
 ````
 roslaunch covis covis_bag_0.launch 
 roslaunch covis covis_bag_1.launch 
@@ -101,10 +101,16 @@ Edit the corresponding bag name in `covis_euroc_mav.launch` file:
 ````
 <node pkg="rosbag" type="play" name="rosbag" args="$(find covis)/bag/MH_05_difficult.bag"/>
 ````
-run the following launch files:
+run ````rviz```` and launch ````Server````:
 ````
-roslaunch covis rviz_euroc.launch
-roslaunch covis covis_euroc_mav.launch
+roslaunch covis rviz_Server.launch 
+roslaunch covis Server.launch 
+````
+run ````client1````,````client2````,````client3```` in different terminal:
+````
+roslaunch covis covis_euroc_1.launch
+roslaunch covis covis_euroc_2.launch
+roslaunch covis covis_euroc_3.launch
 ````
 
 #### 5.4 KITTI Dataset
@@ -118,12 +124,16 @@ Decompress `poses.zip` file and edit the corresponding bag name in `covis_kitti.
 <param name="/dataset_folder_path"    type="string"  value="$(find covis)/bag/KITTI/dataset/sequences/00/" />
 <param name="/dataset_gt_file"        type="string"  value="$(find covis)/bag/KITTI/dataset/poses/00.txt" />
 ````
-run the following launch files:
+run ````rviz```` and launch ````Server````:
 ````
-roslaunch covis rviz_kitti.launch
+roslaunch covis rviz_kitti.launch 
+roslaunch covis Server_kitti.launch 
+````
+run ````client1````,````client2````,````client3```` in different terminal:
+````
 roslaunch covis covis_kitti.launch
-````
 
+````
 
 ### Maintainer:
 [Shengyang Chen](https://www.polyu.edu.hk/researchgrp/cywen/index.php/en/people/alumni.html)(Dept.ME,PolyU): shengyang.chen@connect.polyu.hk <br />
