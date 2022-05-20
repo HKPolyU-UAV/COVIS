@@ -62,7 +62,7 @@ window_size:       8
 
 #LoopClosureTheread
 #define lcKFStart
-lcKFStart: 25
+lcKFStart: 0
 #define lcKFDist
 lcKFDist: 18
 #define lcKFMaxDist
@@ -78,10 +78,11 @@ ratioRansac: 0.5
 #define minPts
 minPts: 20
 #define minScore
-minScore: 0.12
+minScore: 0.05
 
 #Save LoopResult
 ResultPath: "~/LoopPath/"
+EdgeScale: 0.03
 
 #visualization
 saveImage: 1
@@ -91,4 +92,4 @@ saveImage: 1
 #define ROSCONSOLE_SEVERITY_INFO 1
 #define ROSCONSOLE_SEVERITY_WARN 2
 #define ROSCONSOLE_SEVERITY_ERROR 3
-LogLevel: 0
+LogLevel: 1

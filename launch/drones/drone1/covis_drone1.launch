@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<launch>
+
+<!--COVIS######################################################################################################-->
+<group ns="Agent1">
+<!--Input######################################################################################################-->
+    <include file="$(find covis)/launch/drones/drone1/d435_depth.launch"/>
+    <include file="$(find covis)/launch/drones/drone1/px4.launch"/>
+
+<!--COVIS######################################################################################################-->
+    <arg name="node_start_delay"  default="5.0" />
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/drones/drone1/depth_px4.yaml"/>
+    <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3"/>
+    <!-- Agent param -->
+    <param name="~AgentId"        type="int"    value="1"/>
+    <param name="~AgentFrameId"        type="string" value="odom1" /> 
+    <param name="~MapTopicName"   type="string" value="Map1"/>
+    <!--In lite version, the visualization will be simplified -->
+
+    <!-- Manager -->
+<!--    <node pkg="nodelet" type="nodelet"
+          name="covis_nodelet_manager" args="manager" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+          <param name="num_worker_threads" value="1" />
+    </node> -->
+
+    <!-- TrackingNode -->
+<!--    <node pkg="nodelet" type="nodelet" args="load covis/TrackingNodeletClass covis_nodelet_manager"
+          name="TrackingNodeletClass_loader" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " >-->
+        <!-- remap D435 input -->
+<!--        <remap from="/vo/input_image_0"  to="/camera/infra1/image_rect_raw"/> 
+        <remap from="/vo/input_image_1"  to="/camera/depth/image_rect_raw"/>-->
+        <!-- remap PIXHAWK input -->
+<!--        <remap from="/imu"             to="/mavros/imu/data"/> -->
+        <!-- remap output -->
+<!--        <remap from="imu_pose" to="/mavros/vision_pose/pose"/> -->
+        <!--<remap from="imu_odom" to="/covis/imu_odom"/>-->
+        <!--<remap from="imu_path" to="/covis/imu_path"/>-->
+ <!--   </node>-->
+
+    <!-- LocalMapNode -->
+<!--    <node pkg="nodelet" type="nodelet" args="load covis/LocalMapNodeletClass covis_nodelet_manager"
+          name="LocalMapNodeletClass_loader" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+    </node>-->
+
+  </group>
+</launch>
