@@ -53,6 +53,9 @@ void F2FTracking::correction_feed(const double time, const CorrectionInfStruct c
 void F2FTracking::imu_feed(const double time, const Vec3 acc, const Vec3 gyro,
                            Quaterniond &q_w_i, Vec3 &pos_w_i, Vec3 &vel_w_i)
 {
+
+    //printf("imu time: %lf \n", time);
+    m_buf.lock();
     if(!(vimotion->imu_initialized))
     {
         this->has_imu=true;
@@ -61,6 +64,7 @@ void F2FTracking::imu_feed(const double time, const Vec3 acc, const Vec3 gyro,
     {
         vimotion->viIMUPropagation(IMUSTATE(time,acc,gyro),q_w_i,pos_w_i,vel_w_i);
     }
+    m_buf.unlock();
 }
 
 void F2FTracking::image_feed(const double time,
@@ -69,6 +73,8 @@ void F2FTracking::image_feed(const double time,
                              bool &new_keyframe,
                              bool &reset_cmd)
 {
+    std::thread::id this_id = std::this_thread::get_id();
+    //printf("camera time: %lf \n", time);
     auto start = high_resolution_clock::now();
     new_keyframe = false;
     reset_cmd = false;

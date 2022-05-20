@@ -21,7 +21,7 @@ T_imu_cam0:
 
 is_lite_version:   False
 
-##vifusion parameter
+#vifusion parameter
 #Madgwick beta
 vifusion_para1: 0.1
 #proportion of vision feedforware(roll and pich)
@@ -90,13 +90,14 @@ saveImage: 1
 
 #IntraLoop
 IntraLoop: True
+EdgeScale: 0.03
 
 #ROS Console LEVEL
 #define ROSCONSOLE_SEVERITY_DEBUG 0
 #define ROSCONSOLE_SEVERITY_INFO 1
 #define ROSCONSOLE_SEVERITY_WARN 2
 #define ROSCONSOLE_SEVERITY_ERROR 3
-LogLevel: 1
+LogLevel: 0
 
 
 

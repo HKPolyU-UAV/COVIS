@@ -43,7 +43,7 @@ vifusion_para6: 0.1
 
 #feature relate parameter
 #max features in a grid
-feature_para1: 15
+feature_para1: 60
 #min features in a grid
 feature_para2: 30
 #distance of features

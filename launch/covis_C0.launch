@@ -14,13 +14,13 @@
     <param name="~AgentFrameId"        type="string" value="odom0" /> 
     <param name="~MapTopicName"   type="string" value="Map0"/>
 
-    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC0_broadcaster" args="0 0 0 0 0 0 map odom0" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC0_broadcaster" args="0 20 0 0 0 0 map odom0" />
 
     <!-- Manager -->
     <node pkg="nodelet" type="nodelet"
           name="covis_nodelet_manager" args="manager" output="screen"
           launch-prefix="bash -c 'sleep 0; $0 $@' ">
-          <param name="num_worker_threads" value="8" />
+          <param name="num_worker_threads" value="4" />
     </node>
 
     <!-- TrackingNode -->

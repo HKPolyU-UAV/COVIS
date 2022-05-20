@@ -47,6 +47,7 @@ public:
   SE3 T_c_w_last_keyframe;
   deque<ID_POSE> pose_records;
   CameraFrame::Ptr curr_frame,last_frame;
+  std::mutex m_buf;
 
   void init(const DepthCamera dc_in,
             const SE3 T_i_c0_in,

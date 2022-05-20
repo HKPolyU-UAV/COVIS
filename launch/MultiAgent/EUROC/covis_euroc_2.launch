@@ -43,7 +43,7 @@
         <!-- remap EuRoC_MAV input -->
         <remap from="/vo/input_image_0" to="/Agent1/cam0/image_raw" />
         <remap from="/vo/input_image_1" to="/Agent1/cam1/image_raw" />
-        <!--<remap from="/imu" to="/Agent1/imu0" />-->
+        <remap from="/imu" to="/Agent1/imu0" />-->
         <!-- remap output -->
         <!--<remap from="imu_pose" to="/mavros/vision_pose/pose"/>-->
         <!--<remap from="imu_odom" to="/covis/imu_odom"/>-->

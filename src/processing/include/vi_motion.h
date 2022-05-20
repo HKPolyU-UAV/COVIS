@@ -8,7 +8,7 @@
 #include <mutex>
 #include <thread>
 
-#define STATES_QUEUE_SIZE          (1000)
+#define STATES_QUEUE_SIZE          (400)
 
 struct MOTION_STATE{
     Vec3 pos;
@@ -70,7 +70,7 @@ public:
 
 private:
 
-    bool viFindStateIdx(const double time, int& idx_in_q);
+    bool viFindStateIdx(const double curr_time, int& idx_in_q);
 
 
 };

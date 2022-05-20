@@ -217,10 +217,10 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "repub_rec");
     ros::NodeHandle nh("~");
 
-    nh.getParam("sub_topic",        sub_topic);
     nh.getParam("sub_type",         sub_type);
-    nh.getParam("repub_topic",      repub_topic);
+    nh.getParam("sub_topic",        sub_topic);
     nh.getParam("repub_type",       repub_type);
+    nh.getParam("repub_topic",      repub_topic);
     nh.getParam("output_file_path", output_file_path);
     cout << output_file_path << endl;
     if(output_file_path=="0")
@@ -267,6 +267,14 @@ int main(int argc, char **argv)
     if(sub_type=="NavPath")
     {
         sub = nh.subscribe(sub_topic, 10000, NavPath_callback);
+    }
+    if(sub_type =="csv")
+    {
+      ROS_WARN("is loading csv");
+      cout << "file path: " << sub_topic << endl;
+      fstream data(sub_topic, ios::in);
+
+
     }
 
     signal(SIGINT, mySigintHandler);

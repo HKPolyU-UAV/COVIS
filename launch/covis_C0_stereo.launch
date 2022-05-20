@@ -7,7 +7,7 @@
     <include file="$(find covis)/launch/d435i/d435i_stereo.launch"/>
     <!-- All node param-->
     <arg name="node_start_delay"  default="1.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/d435i/d435_stereo.yaml"/>
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/d435i/d435i_stereo.yaml"/>
     <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3"/>
     <!-- Agent param -->
     <param name="~AgentId"        type="int"    value="0"/>
@@ -20,7 +20,7 @@
     <node pkg="nodelet" type="nodelet"
           name="covis_nodelet_manager" args="manager" output="screen"
           launch-prefix="bash -c 'sleep 0; $0 $@' ">
-          <param name="num_worker_threads" value="8" />
+          <param name="num_worker_threads" value="2" />
     </node>
 
     <!-- TrackingNode -->

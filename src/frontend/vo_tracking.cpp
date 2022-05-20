@@ -65,7 +65,7 @@ private:
   queue<sensor_msgs::ImageConstPtr> img0_buf;
   queue<sensor_msgs::ImageConstPtr> img1_buf;
   std::mutex m_buf;
-  boost::shared_ptr <boost::thread> process_thread;
+  std::shared_ptr <std::thread> process_thread;
 
   //Octomap
   //OctomapFeeder* octomap_pub;
@@ -340,8 +340,8 @@ private:
           boost::bind(&TrackingNodeletClass::imu_callback, this, _1));
     exactSync_ = new message_filters::Synchronizer<MyExactSyncPolicy>(MyExactSyncPolicy(2), img0_sub, img1_sub);
     exactSync_->registerCallback(boost::bind(&TrackingNodeletClass::image_input_callback, this, _1, _2));
-    process_thread = boost::shared_ptr<boost::thread>
-            (new boost::thread(boost::bind(&TrackingNodeletClass::process, this)));
+    process_thread = std::shared_ptr<std::thread>
+            (new std::thread(&TrackingNodeletClass::process, this));
 
     ROS_WARN("VIO %lu start tracking thread", AgentId_);
 
@@ -350,10 +350,12 @@ private:
 
   void imu_callback(const sensor_msgs::ImuConstPtr& msg)
   {
+    std::thread::id this_id = std::this_thread::get_id();
+    //std::cout << "thread " << this_id << " imu callback ...\n";
     //SETP1: TO ENU Frame
     Vec3 acc,gyro;
     ros::Time tstamp = msg->header.stamp;
-    //ROS_DEBUG("Agent %lu, IMU seq %du ", AgentId_, msg->header.seq);
+    //ROS_WARN("Agent %lu, IMU time %lf ", AgentId_, msg->header.stamp.toSec());
     if(imu_type==D435I)
     {
       acc = Vec3(-msg->linear_acceleration.z,
@@ -394,6 +396,7 @@ private:
     pose_imu_pub->pubPose(q_w_i,pos_w_i,tstamp);
     odom_imu_pub->pubOdom(q_w_i,pos_w_i,vel_w_i,tstamp);
     path_imu_pub->pubPathT_w_c(SE3(q_w_i,pos_w_i),tstamp, AgentId_);
+    drone_pub->PubT_w_i(SE3(q_w_i,pos_w_i), tstamp, AgentId_);
   }
 
   void correction_feedback_callback(const covis::CorrectionInf::ConstPtr& msg)
@@ -413,13 +416,19 @@ private:
   void image_input_callback(const sensor_msgs::ImageConstPtr & img0_Ptr,
                             const sensor_msgs::ImageConstPtr & img1_Ptr)
   {
+
+    //ROS_WARN("Agent %lu, img0 time %lf ", AgentId_, img0_Ptr->header.stamp.toSec());
+    //ROS_WARN("Agent %lu, img1 time %lf ", AgentId_, img0_Ptr->header.stamp.toSec());
+
     m_buf.lock();
+    std::thread::id this_id = std::this_thread::get_id();
+    //std::cout << "thread " << this_id << " camera callback ...\n";
     img0_buf.push(img0_Ptr);
     img1_buf.push(img1_Ptr);
     m_buf.unlock();
 
   }
-
+// second thread to sync img msg
   void process()
   {
       while(true)
@@ -461,7 +470,7 @@ private:
                                               this->cam_tracker->curr_frame->T_c_w,
                                               tstamp);
               vision_path_pub->pubPathT_c_w(this->cam_tracker->curr_frame->T_c_w, tstamp, AgentId_);
-              drone_pub->PubT_w_c(this->cam_tracker->curr_frame->T_c_w.inverse(), tstamp, AgentId_);
+
 
               SE3 T_map_c =SE3();
               try{
