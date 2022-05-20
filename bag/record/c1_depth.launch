@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+<!--COVIS######################################################################################################-->
+<group ns="Agent1">
+    <!-- Input-->
+    <include file="$(find covis)/launch/d435i/d435i_depth.launch"/>
+  </group>
+</launch>
+
