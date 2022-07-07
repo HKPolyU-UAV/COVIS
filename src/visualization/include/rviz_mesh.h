@@ -1,6 +1,7 @@
 #ifndef RVIZ_MESH_H
 #define RVIZ_MESH_H
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <include/common.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>

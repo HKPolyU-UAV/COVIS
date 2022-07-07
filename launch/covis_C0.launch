@@ -8,10 +8,11 @@
     <!-- All node param-->
     <arg name="node_start_delay"  default="1.0" />
     <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/d435i/d435i_depth.yaml"/>
-    <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3"/>
+    <param name="/briefpath"      type="string" value="$(find covis)/voc/brief_pattern.yml"/>
+
     <!-- Agent param -->
     <param name="~AgentId"        type="int"    value="0"/>
-    <param name="~AgentFrameId"        type="string" value="odom0" /> 
+    <param name="~AgentFrameId"   type="string" value="odom0" /> 
     <param name="~MapTopicName"   type="string" value="Map0"/>
 
     <node pkg="tf2_ros" type="static_transform_publisher" name="linkC0_broadcaster" args="0 20 0 0 0 0 map odom0" />
@@ -30,7 +31,7 @@
         <!-- D435i -->
         <remap from="/vo/input_image_0"  to="/Agent0/camera/infra1/image_rect_raw"/>
         <remap from="/vo/input_image_1"  to="/Agent0/camera/depth/image_rect_raw"/>
-        <remap from="/imu"               to="/Agent0/camera/imu"/>
+        <remap from="/imu"               to="/Agent0/camera/imu"/>-->
     </node>
 
 

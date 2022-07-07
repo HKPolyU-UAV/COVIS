@@ -17,7 +17,7 @@ void DepthCamera::setDepthCamInfo(const int w_in, const int h_in,
     cam0_fy = fy;
     cam0_cx = cx;
     cam0_cy = cy;
-    K0_ <<cam0_fx,0,cam0_cx,0,cam0_fy,cam0_cy,0,0,1;
+    K0_ << cam0_fx,0,cam0_cx,0,cam0_fy,cam0_cy,0,0,1;
     K0_rect = (cv::Mat1d(3, 3) << fx, 0, cx, 0, fy, cy, 0, 0, 1);
     D0_rect = (cv::Mat1d(4, 1) << 0,0,0,0);
     cam_scale_factor = scale_factor;
@@ -138,6 +138,13 @@ Vec2 DepthCamera::world2pixelT_c_w ( const Vec3& p_w, const SE3& T_c_w )
 Vec3 DepthCamera::pixel2worldT_c_w ( const Vec2& p_p, const SE3& T_c_w, double depth )
 {
     return camera2worldT_c_w ( pixel2camera ( p_p, depth ), T_c_w );
+}
+
+Vec2 DepthCamera::pixel2norm(const Vec2& p_p)
+{
+    //cout << cam0_fx << " " << cam0_fy << " " <<cam0_cx << " " <<cam0_cy << endl;
+    return Vector2d(
+          (p_p(0,0)- cam0_cx) /cam0_fx,  (p_p ( 1,0 )- cam0_cy )/cam0_fy);
 }
 
 

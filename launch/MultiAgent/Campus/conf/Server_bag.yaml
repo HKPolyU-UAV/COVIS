@@ -1,0 +1,48 @@
+# Client config file
+C0_param: "c0_pix_stereo.yaml"
+C1_param: "c1_stereoi.yaml"
+C2_param: "c2_pix_stereo.yaml"
+
+#LocalMapThread
+output_sparse_map: False
+window_size:       8
+
+#LoopClosureTheread
+#define lcKFStart
+lcKFStart: 0
+#define lcKFDist
+lcKFDist: 18
+#define lcKFMaxDist
+lcKFMaxDist: 50
+#define lcKFLast
+lcKFLast: 20
+#define lcNKFClosest
+lcNKFClosest: 2
+#define ratioMax
+ratioMax: 0.5
+#define ratioRansac
+ratioRansac: 0.5
+#define minPts
+minPts: 20
+#define minScore
+minScore: 0.05
+
+#Save LoopResult
+ResultPath: "~/LoopPath/"
+
+#visualization
+saveImage: 1
+EdgeScale: 0.03
+
+#IntraLoop
+IntraLoop: False
+EdgeScale: 0.03
+
+#ROS Console LEVEL
+#define ROSCONSOLE_SEVERITY_DEBUG 0
+#define ROSCONSOLE_SEVERITY_INFO 1
+#define ROSCONSOLE_SEVERITY_WARN 2
+#define ROSCONSOLE_SEVERITY_ERROR 3
+LogLevel: 0
+
+

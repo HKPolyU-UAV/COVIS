@@ -24,6 +24,19 @@ FeatureDEM::FeatureDEM(const int image_width,
     gftt_ql  = static_cast<double>(f_para(4));
     gftt_dis = static_cast<int>(f_para(5));
 
+#if 0
+    cout << "width: " << width << endl;
+    cout << "height: " << height << endl;
+    cout << "regionWidth: " << regionWidth << endl;
+    cout << "regionHeight: " << regionHeight << endl;
+    cout << "boundary_dis: " << boundary_dis << endl;
+    cout << "max_region_feature_num: " << max_region_feature_num << endl;
+    cout << "min_region_feature_num: " << min_region_feature_num << endl;
+    cout << "gftt_num: " << gftt_num << endl;
+    cout << "gftt_ql: "  << gftt_ql << endl;
+    cout << "gftt_dis: " << gftt_dis << endl;
+#endif
+
     int gridx[5],gridy[5];
     for(int i=0; i<5; i++)
     {
@@ -177,7 +190,18 @@ void FeatureDEM::redetect(const cv::Mat& img,
 //    }
 
     vector<cv::Point2f>  features;
-    cv::goodFeaturesToTrack(img, features, gftt_num, gftt_ql, gftt_dis, mask);
+    vector<cv::KeyPoint> keypoints;
+    if(1)
+    {
+      cv::goodFeaturesToTrack(img,features, 2*gftt_num - (int)existedPts.size(), gftt_ql, gftt_dis);
+    }
+    else
+    {
+      cv::FAST(img, keypoints, 20, true);
+      cv::KeyPoint::convert(keypoints, features);
+
+    }
+    //cv::goodFeaturesToTrack(img, features, gftt_num - (int)existedPts.size(), gftt_ql, gftt_dis, mask);
     vector<pair<cv::Point2f,float>> regionKeyPts_prepare[16];
     for(int i=0; i<16; i++)
     {
@@ -257,8 +281,16 @@ void FeatureDEM::detect(const cv::Mat& img, vector<cv::Point2f>& newPts)
     /// Harris Corner detecor, using cv::cornerMinEigenVal to reject corners, for the first time detect, accept two times maixmum
     /// number of corners
     vector<cv::Point2f>  features;
-    cv::goodFeaturesToTrack(img,features, gftt_num*2, gftt_ql, gftt_dis);
-
+    vector<cv::KeyPoint> keypoints;
+    if(1)
+    {
+      cv::goodFeaturesToTrack(img,features, gftt_num*2, gftt_ql, gftt_dis);
+    }
+    else
+    {
+      cv::FAST(img, keypoints, 20, true);
+      cv::KeyPoint::convert(keypoints, features);
+    }
     for(int i=0; i<16; i++)
     {
         regionKeyPts[i].clear();

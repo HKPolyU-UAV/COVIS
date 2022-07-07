@@ -27,6 +27,7 @@ bool OptimizeInFrame::optimize(CameraFrame &frame)
     //cout << "pose_befor_ba: " << frame.T_c_w.translation() << endl;
     if(lms_in_frame.size()<10)
     {
+        cout << "no enough tracking landmark " << endl;
         return false;
     }
     else {
@@ -85,6 +86,7 @@ bool OptimizeInFrame::optimize(CameraFrame &frame)
         }
         if(optimizer.edges().size()<10)
         {
+            cout << "no enough lk tracking, reproj error too high" << endl;
             return false;
         }
         optimizer.initializeOptimization();

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+
+<!--COVIS######################################################################################################-->
+<group ns="Server">
+    <arg name="node_start_delay"  default="1.0" />
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/Bag/conf/Server_bag.yaml"/>
+    <param name="/voc"            type="string" value="$(find covis)/voc/brief_k10L6.bin"/>  
+    <param name="/ClientNum"      type="int"    value="2"/>
+    <!-- Manager -->
+    <node pkg="nodelet" type="nodelet"
+          name="covis_nodelet_manager" args="manager" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+          <param name="num_worker_threads" value="1" />
+    </node>
+
+    <!-- MergingNode -->
+    <node pkg="nodelet" type="nodelet" args="load covis/MergingNodeletClass covis_nodelet_manager"
+        name="MergingNodeletClass_loader" output="screen"
+        launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+    </node>-->
+  </group>
+</launch>

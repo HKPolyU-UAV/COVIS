@@ -20,7 +20,7 @@
 #include "../3rdPartLib/DBow3/src/BowVector.h"
 #include "../3rdPartLib/DBow3/src/ScoringObject.h"
 #include "../3rdPartLib/DBow3/src/Database.h"
-
+#include "../3rdPartLib/DLib/DVision/DVision.h"
 // OpenCV
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -33,7 +33,7 @@
 
 using namespace DBoW3;
 using namespace std;
-
+using namespace DVision;
 
 //command line parser
 class CmdLineParser{int argc; char **argv; public: CmdLineParser(int _argc,char **_argv):argc(_argc),argv(_argv){}  bool operator[] ( string param ) {int idx=-1;  for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i;    return ( idx!=-1 ) ;    } string operator()(string param,string defvalue="-1"){int idx=-1;    for ( int i=0; i<argc && idx==-1; i++ ) if ( string ( argv[i] ) ==param ) idx=i; if ( idx==-1 ) return defvalue;   else  return ( argv[  idx+1] ); }};
@@ -201,7 +201,35 @@ void testDatabase(const  vector<cv::Mat > &features)
 
 int main(int argc,char **argv)
 {
-  cout << "prepare to create voc " << endl;
+   size_t n_bits = 8;
+   boost::dynamic_bitset<> B1(n_bits);
+   boost::dynamic_bitset<> B2(n_bits);
+   boost::dynamic_bitset<> temp(4, 3);
+
+   cout << "Binary representation of 8: "
+           << B1 << endl;
+      cout << "Binary representation of 7: "
+           << B2 << endl
+           << endl;
+
+
+      unsigned long long int tmp_int = 14;
+
+
+
+      cout << B1 << endl;
+
+      for(int i = 0; i < 4 ; i++, tmp_int >>= 1)
+      {
+
+          cout << "i: " << i << " tmp_int: " << tmp_int << endl;
+          B1[i] = (tmp_int & 1);
+
+
+      }
+      cout << "final tmp: " << tmp_int << endl;
+      cout << B1 << endl;
+
 
 //  string descriptor= "orb";
 //  string folder = "/home/yurong/Training/";
@@ -238,12 +266,14 @@ int main(int argc,char **argv)
 
 
 
-  Vocabulary old_voc("/home/yurong/new_ws/src/CO-VISLAM/voc/merge_voc.dbow3");
-  cout << "Vocabulary information: " << endl
-       << old_voc << endl << endl;
+//  Vocabulary old_voc("/home/yurong/new_ws/src/CO-VISLAM/voc/merge_voc.dbow3");
+//  cout << "Vocabulary information: " << endl
+//       << old_voc << endl << endl;
   //AddfeaturesExistingVoc(old_voc, features);
 
   //  testDatabase(features);
+
+
   return 0;
 }
 

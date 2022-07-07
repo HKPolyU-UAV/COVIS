@@ -11,7 +11,7 @@
 //COVIS
 #include <include/yamlRead.h>
 #include <include/triangulation.h>
-#include <include/keyframe_msg.h>
+#include <include/keyframe_msg_handler.h>
 #include <covis/KeyFrame.h>
 #include <include/camera_frame.h>
 #include <include/vi_type.h>
@@ -38,13 +38,11 @@
 #include <tf/transform_broadcaster.h>
 #include <tf2_ros/transform_broadcaster.h>
 
-//DBoW3
-#include "../3rdPartLib/DBow3/src/DBoW3.h"
-#include "../3rdPartLib/DBow3/src/DescManip.h"
-#include "../3rdPartLib/DBow3/src/Vocabulary.h"
-#include "../3rdPartLib/DBow3/src/BowVector.h"
-#include "../3rdPartLib/DBow3/src/ScoringObject.h"
-#include "../3rdPartLib/DBow3/src/Database.h"
+//DBoW2
+#include "../3rdPartLib/DLib/DVision/DVision.h"
+#include "../3rdPartLib/DBow2/DBoW/DBoW2.h"
+#include "../3rdPartLib/DBow2/DBoW/TemplatedDatabase.h"
+#include "../3rdPartLib/DBow2/DBoW/TemplatedVocabulary.h"
 
 //g2o
 #include <g2o/config.h>
@@ -68,7 +66,9 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
 
-using namespace DBoW3;
+using namespace DVision;
+using namespace DBoW2;
+
 struct LC_PARAS
 {
     int lcKFStart;
@@ -85,19 +85,23 @@ struct LC_PARAS
 
 struct KeyFrameMerge
 {
-    int64_t         frame_id;    // frame id
-    int64_t         keyframe_id; // global id in merging module
-    size_t          AgentId_;    // Agent id
-    int             lm_count;    // number of landmark
-    ros::Time       t;           // timestamp of frame
-    SE3             T_c_w;       // pose from VO * T_odom_map :w0 to w1
-    SE3             T_c_w_odom;  // pose from VO: w0
-    SE3             T_c_w_global;  // pose aligned in global frame
-    vector<Vec2>    lm_2d;       // 2d landmark in pixel coordinate frame
-    vector<Vec3>    lm_3d;       // 3d landmark in camera frame
-    vector<double>  lm_depth;    // landmark depth
-    vector<cv::Mat> lm_descriptor;  // descriptors of img0
-    DBoW3::BowVector kf_bv;          // BoWvector of img0
+    int64_t         frame_id;      // frame id
+    int64_t         keyframe_id;   // global id in merging module
+    size_t          AgentId_;      // Agent id
+    int             lm_count;      // number of landmark
+    ros::Time       t;             // timestamp of frame
+    SE3             T_c_w;         // pose from VO * T_odom_map :w0 to w1
+    SE3             T_c_w_odom;    // pose from VO: w0
+    SE3             T_c_w_global;  // cam pose aligned in global frame
+    SE3             T_c_i;
+    SE3             T_w_i;
+    vector<Vec3>    lm_3d;         // 3d landmark in camera frame
+    vector<Vec2>    lm_2d;         // 2d landmark in pixel coordinate frame
+    vector<Vec2>    lm_2d_post;    // 2d landmark redect
+    vector<double>  lm_depth;      // landmark depth
+    vector<DVision::BRIEF::bitset> lm_2d_descriptor, lm_2d_post_descriptor;
+    DBoW2::BowVector kf_bv;          // BoWvector of img0
+    cv::Mat img0;
 };
 
 //sort by descending order
@@ -116,12 +120,13 @@ struct sort_descriptor_by_queryIdx
 };
 
 typedef std::pair<size_t, int> idpair;
-class Merging{
+class Merging
+{
 public:
-    Merging(ros::NodeHandle &nh, LC_PARAS &lc_paras,
-                DBoW3::Vocabulary &voc, DBoW3::Database &db, DepthCamera &dc, int save_flag_=0, int number_of_Agent=1, bool IntraLoop=false) ;
-    void setKeyFrameMerge(const covis::KeyFrameConstPtr& msg);
 
+    Merging(ros::NodeHandle &nh, LC_PARAS &lc_paras, const vector<DepthCamera> &d_cameras, int save_flag_=0, int number_of_Agent=1, bool IntraLoop=false) ;
+    void setKeyFrame(const covis::KeyFrameConstPtr& msg);
+    ~Merging();
 
 private:
     ros::NodeHandle nh;
@@ -134,11 +139,13 @@ private:
 
     tf2_ros::TransformBroadcaster br;
 
-    DepthCamera dc;
-    LC_PARAS lc_paras;
+    vector<DepthCamera> d_cameras;
+    //DepthCamera dc;
     //DBow related para
-    Vocabulary voc;
-    Database db;// faster search
+    LC_PARAS lc_paras;
+
+    BriefVocabulary* voc;
+    BriefDatabase db;// faster search
 
     vector<vector<double>> sim_matrix;//for similarity visualization
     vector<double> sim_vec;
@@ -211,8 +218,21 @@ private:
     bool isLoopClosureKF(shared_ptr<KeyFrameMerge> kf0, shared_ptr<KeyFrameMerge> kf1, SE3 &se_ji);
     void updateGlobalPose(shared_ptr<KeyFrameMerge> kf0, shared_ptr<KeyFrameMerge> kf1, SE3 &se_ji);
     bool add_Loop_check(shared_ptr<KeyFrameMerge> kf0, shared_ptr<KeyFrameMerge> kf1, SE3 &loop_pose);
-
-
+//    void searchByBRIEFDes(const std::vector<Vec2> &lm_2d_old,
+//                          const std::vector<BRIEF::bitset> &lm_2d_des_old,
+//                          const std::vector<Vec2> &lm_2d,
+//                          const std::vector<BRIEF::bitset> &lm_2d_des,
+//                          std::vector<cv::Point2f>& matched_2d, std::vector<uchar>& status);
+    void searchByBRIEFDes(std::vector<cv::Point2f> &matched_2d_old,
+                          std::vector<uchar> &status,
+                          const std::vector<BRIEF::bitset> &point_des,
+                          const std::vector<BRIEF::bitset> &descriptors_old,
+                          const std::vector<cv::Point2f> &feature_2d_old);
+    bool searchInAera(const BRIEF::bitset window_descriptor,
+                      const std::vector<BRIEF::bitset> &descriptors_old,
+                      const std::vector<cv::Point2f> &feature_2d_old,
+                      cv::Point2f &best_match_norm);
+    int HammingDis(const BRIEF::bitset &a, const BRIEF::bitset &b);
     void expandGraph();
     void sim_mat_update();
     bool check_lastLC_close();

@@ -9,7 +9,7 @@
 
 #include <include/yamlRead.h>
 #include <include/correction_inf_msg.h>
-#include <include/keyframe_msg.h>
+#include <include/keyframe_msg_handler.h>
 #include <covis/KeyFrame.h>
 #include <include/depth_camera.h>
 #include <geometry_msgs/Vector3.h>

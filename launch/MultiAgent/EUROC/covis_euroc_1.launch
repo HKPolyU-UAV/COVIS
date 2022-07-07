@@ -2,7 +2,7 @@
 <launch>
 <!--rosbag#####################################################################################################-->
     <param name="/use_sim_time" value="true" />
-    <node pkg="rosbag" type="play" name="rosbag1" args="$(find covis)/bag/EUROC/MH_01_easy.bag --clock -d0 -s25 -r2 /cam0/image_raw:=/Agent0/cam0/image_raw /cam1/image_raw:=/Agent0/cam1/image_raw /imu0:=/Agent0/imu0 /leica/position:=/Agent0/leica/position" />
+    <node pkg="rosbag" type="play" name="rosbag1" args="$(find covis)/bag/EUROC/MH_01_easy.bag --clock -d0 -s0 -r2 /cam0/image_raw:=/Agent0/cam0/image_raw /cam1/image_raw:=/Agent0/cam1/image_raw /imu0:=/Agent0/imu0 /leica/position:=/Agent0/leica/position" />
     <!--    V1_01_easy      -->
     <!--    V1_02_medium    -->
     <!--    V1_03_difficult -->
@@ -19,16 +19,16 @@
 <!--COVIS######################################################################################################-->
 <group ns="Agent0">
     <arg name="node_start_delay" default="0.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/EUROC.yaml" />
-    <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3" />
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Client0.yaml" />
+    <param name="/briefpath"      type="string" value="$(find covis)/voc/brief_pattern.yml"/>
     <!-- Agent param -->
     <param name="~AgentId"        type="int"    value="0"/>
     <param name="~AgentFrameId"   type="string" value="odom0" /> 
     <param name="~MapTopicName"   type="string" value="Map0"/>
     <!--In lite version, the visualization will be simplified -->
 
-    <!-- TF  -->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC0_broadcaster" args="20 15 0 0 0 0 map odom0" />
+    <!-- TF  -->                                                                            
+    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC0_broadcaster" args="20 20 0 0 0 0 map odom0" />
 
     <!-- Manager -->
     <node pkg="nodelet" type="nodelet"

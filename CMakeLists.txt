@@ -11,13 +11,13 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rdPartLib/g2o/cmake_m
 set(G2O_ROOT /usr/local/include/g2o)
 find_package(G2O REQUIRED) 
 
-find_package (OpenCV 3.2.0 REQUIRED)
+find_package (OpenCV 3 REQUIRED)
 find_package (Eigen3 REQUIRED)
 
 find_package (CSparse REQUIRED )
 find_package (Sophus REQUIRED )
 find_package (yaml-cpp REQUIRED )
-find_package (DBoW3 REQUIRED)
+#find_package (DBoW3 REQUIRED)
 # pcl
 find_package( PCL REQUIRED)
 include_directories( ${PCL_INCLUDE_DIRS} )
@@ -72,7 +72,9 @@ include_directories(
     ${CSPARSE_INCLUDE_DIR}
     ${Sophus_INCLUDE_DIRS}
     ${YAML_CPP_INCLUDE_DIR}
-    ${DBoW3_INCLUDE_DIR}
+    #${DBoW3_INCLUDE_DIR}
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdPartLib/DBow2/"
+    "${CMAKE_CURRENT_SOURCE_DIR}/3rdPartLib/DLib/"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/processing/"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/backend/"
@@ -80,6 +82,7 @@ include_directories(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/utils/"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/visualization/"
     #"${CMAKE_CURRENT_SOURCE_DIR}/src/octofeeder/"
+    
     )
 
 
@@ -112,7 +115,7 @@ add_library(covis
     src/visualization/rviz_edge.cpp
     src/visualization/rviz_mesh.cpp
     #msg
-    src/utils/keyframe_msg.cpp
+    src/utils/keyframe_msg_handler.cpp
     src/utils/correction_inf_msg.cpp
 
     #node tracking
@@ -127,6 +130,17 @@ add_library(covis
     src/backend/vo_merging.cpp
     src/backend/merging.cpp
     #src/octofeeder/octomap_feeder.cpp
+
+    #brief pattern
+    3rdPartLib/DLib/DUtils/Random.cpp
+    3rdPartLib/DLib/DUtils/Timestamp.cpp
+    3rdPartLib/DLib/DVision/BRIEF.cpp
+    3rdPartLib/DBow2/DBoW/BowVector.cpp
+    3rdPartLib/DBow2/DBoW/FBrief.cpp
+    3rdPartLib/DBow2/DBoW/FeatureVector.cpp
+    3rdPartLib/DBow2/DBoW/QueryResults.cpp
+    3rdPartLib/DBow2/DBoW/ScoringObject.cpp
+    3rdPartLib/DBow2/VocabularyBinary.cpp
     )
 
 add_dependencies(covis
@@ -139,7 +153,7 @@ target_link_libraries(covis
     ${CSPARSE_LIBRARY}
     ${Sophus_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    ${DBoW3_LIBRARIES}
+    #${DBoW3_LIBRARIES}
     ${G2O_LIBS}
     ${PCL_LIBRARIES}
     ${Boost_SYSTEM_LIBRARY}
@@ -161,18 +175,5 @@ target_link_libraries(kitti_publisher
     ${catkin_LIBRARIES}
     ${Sophus_LIBRARIES})
 
-add_executable(create
-    src/test/create_voc.cpp)
-target_link_libraries(create
-    ${OpenCV_LIBRARIES}
-    ${DBoW3_LIBRARIES}
-)
-#add_executable(se3
-    #src/test/se3.cpp
-    #src/visualization/rviz_pose.cpp)
-#target_link_libraries(se3
-    #${OpenCV_LIBRARIES}
-    #${G2O_LIBS}
-    #${catkin_LIBRARIES}
-    #${Sophus_LIBRARIES})
+
 

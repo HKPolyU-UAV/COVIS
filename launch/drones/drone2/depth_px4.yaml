@@ -43,11 +43,11 @@ feature_para2: 20
 #distance of features
 feature_para3: 3
 #goodFeaturesToTrack detector maxCorners
-feature_para4: 400
+feature_para4: 150
 #goodFeaturesToTrack detector qualityLevel
 feature_para5: 0.01
 #goodFeaturesToTrack detector minDistance
-feature_para6: 5
+feature_para6: 30
 
 #IIR filter ratio
 dr_para1: 0.9
@@ -60,36 +60,4 @@ dr_para3: 1.0
 output_sparse_map: False
 window_size:       8
 
-#LoopClosureTheread
-#define lcKFStart
-lcKFStart: 0
-#define lcKFDist
-lcKFDist: 18
-#define lcKFMaxDist
-lcKFMaxDist: 50
-#define lcKFLast
-lcKFLast: 20
-#define lcNKFClosest
-lcNKFClosest: 2
-#define ratioMax
-ratioMax: 0.5
-#define ratioRansac
-ratioRansac: 0.5
-#define minPts
-minPts: 20
-#define minScore
-minScore: 0.05
 
-#Save LoopResult
-ResultPath: "~/LoopPath/"
-EdgeScale: 0.03
-
-#visualization
-saveImage: 1
-
-#ROS Console LEVEL
-#define ROSCONSOLE_SEVERITY_DEBUG 0
-#define ROSCONSOLE_SEVERITY_INFO 1
-#define ROSCONSOLE_SEVERITY_WARN 2
-#define ROSCONSOLE_SEVERITY_ERROR 3
-LogLevel: 1

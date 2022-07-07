@@ -475,6 +475,30 @@ void CameraFrame::get2dUndistort3dInlierPair_cvPf(vector<cv::Point2f> &p2d, vect
         }
     }
 }
+/** @brief Use p3d-p2d_norm for solvePNP
+@param p2d_norm 2D landmark with distortion
+@param p3d 3D landmark in worldframe
+
+*/
+void CameraFrame::get2Norm_3d(vector<cv::Point2f>& p2d_norm, vector<cv::Point3f>& p3d)
+{
+   p2d_norm.clear();
+   p3d.clear();
+   for(LandMarkInFrame &lm : landmarks)
+   {
+     if(lm.hasDepthInf() && lm.is_tracking_inlier==true)
+     {
+
+         //Vec2 p2d =  d_camera.pixel2norm(lm.lm_2d_undistort);
+         //Vec2 p2d =  d_camera.pixel2norm(lm.lm_2d_plane);
+         //p2d_norm.push_back(cv::Point2f(p2d[0],p2d[1]));
+         p2d_norm.push_back(cv::Point2f(lm.lm_2d_plane[0],lm.lm_2d_plane[1]));
+         p3d.push_back(cv::Point3f(lm.lm_3d_w[0],lm.lm_3d_w[1],lm.lm_3d_w[2]));
+     }
+   }
+}
+
+
 /** @brief Get landmark 2D pixel lm_2d_plane 2D undistorted lm_2d_undistort and 3D point in camera frame
 @param p2d_p 2D pixel
 @param p2d_u 2D undistorted
@@ -582,23 +606,87 @@ vector<Vec2> CameraFrame::getTrackingOutlierVec(void)
     return ret;
 
 }
-
-void CameraFrame::getKeyFrameInf(vector<int64_t> &lm_id, vector<Vec2> &lm_2d, vector<Vec3> &lm_3d)
+/** @brief Get inlier landmarks of keyframe
+@param lm_id landmark ID
+@param lm_2d_undis undistort 2d points in pixel coordinate
+@param lm_3d_c 3d points in camera frame
+*/
+void CameraFrame::getKeyFrameInf(vector<int64_t>& lm_id, vector<Vec2>& lm_2d, vector<Vec3>& lm_3d_c)
 {
     lm_id.clear();
     lm_2d.clear();
-    lm_3d.clear();
+    lm_3d_c.clear();
+
     for(LandMarkInFrame &lm : landmarks)
     {
         if(lm.hasDepthInf() && lm.is_tracking_inlier==true)
         {
-            lm_3d.push_back(lm.lm_3d_w);
-            lm_2d.push_back(lm.lm_2d_undistort);
             lm_id.push_back(lm.lm_id);
+            lm_2d.push_back(lm.lm_2d_plane);
+            lm_3d_c.push_back(lm.lm_3d_c);
+
         }
     }
 }
+void CameraFrame::calMeanParallax(const CameraFrame::Ptr last_keyframe, int & num_coLM, double & mean_parallax)
+{
+  double sum = 0.0;
+  int cnt = 0;
+  mean_parallax = 0.0;
+  //printf("lm new size: %lu ",  landmarks.size());
+  //printf("lm old size: %lu \n",last_keyframe->landmarks.size());
 
+  for(auto & lm_new: landmarks)
+  {
+    for(auto & lm_old: last_keyframe->landmarks){
+      if (lm_new.lm_id == lm_old.lm_id)
+      {
+         Vec2 p2d_new {lm_new.lm_2d_plane[0], lm_new.lm_2d_plane[1]};
+         Vec2 p2d_old {lm_old.lm_2d_plane[0], lm_old.lm_2d_plane[1]};
+         sum += std::max(0.0, (p2d_new - p2d_old).norm());
+         cnt++;
+      }
+    }
+  }
+  num_coLM = cnt;
+  //cout << "find covis lm " <<  num_coLM << endl;
+  if(cnt != 0)
+    mean_parallax = sum / cnt;
+  //cout << "mean_parallax now " <<  mean_parallax << endl;
+//  for(int i = 0; i < landmarks.size(); i++)
+//  {
+//    uint64_t id = landmarks[i].lm_id;
+//    for(int j = 0; j < last_keyframe->landmarks.size() ;j ++)
+//    {
+//      if(last_keyframe->landmarks[j].lm_id == id)
+//      {
+//        Vec3 p3d_i = landmarks[i].lm_3d_w ;
+//        //cout << "covis id: " << id << "| p3d i: " << p3d_i << endl;
+//        Vec3 p3d_j = last_keyframe->landmarks[j].lm_3d_w ;
+//        //cout << "covis id: " << last_keyframe->landmarks[j].lm_id << "| p3d j: " << p3d_j << endl;
+//            Vec2 pt2d_new {landmarks[i].lm_2d_plane[0], landmarks[i].lm_2d_plane[1]};
+//            Vec2 pt2d_old {flow_last[i].x, flow_last[i].y};
+//            sum += (pt2d_new - pt2d_old).norm();
+//            cnt++;
+//      }
+
+//    }
+
+//  }
+//  for(int i = 0; i < flow_curr.size(); i++)
+//  {
+//    Vec2 pt2d_new {flow_curr[i].x, flow_curr[i].y};
+//    Vec2 pt2d_old {flow_last[i].x, flow_last[i].y};
+//    p2d_norm_new.push_back(pt2d_new);
+//    p2d_norm_old.push_back(pt2d_old);
+//    sum += (pt2d_new - pt2d_old).norm();
+//    cnt++;
+
+//  }
+
+  //mean_parallax = sum / cnt;
+  //cout << "mean_parallax " <<  mean_parallax << endl;
+}
 
 /** @brief Print frame_id of the frame
     overload operator <<

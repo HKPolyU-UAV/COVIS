@@ -31,7 +31,7 @@ bool LKORBTracking::tracking(CameraFrame& from,
     //STEP1: Optical Flow
     //STEP2: F matrix check
     //STEP3: PNP_RANSAC
-    bool ret=false;
+    bool ret = false;
 
     //STEP1
     vector<int>         in_frame_idx;
@@ -182,32 +182,47 @@ bool LKORBTracking::tracking(CameraFrame& from,
     vector<unsigned char> mask_pnp_ransac;
     cv::Mat r_ = cv::Mat::zeros(3, 1, CV_64FC1);
     cv::Mat t_ = cv::Mat::zeros(3, 1, CV_64FC1);
+    cv::Mat D;
+    cv::Mat K = (cv::Mat_<double>(3, 3) << 1, 0, 0, 0, 1, 0, 0, 0, 1);
     cv::Mat inliers;
-    vector<cv::Point2f> p2d;
+    vector<cv::Point2f> p2d_un;
     vector<cv::Point3f> p3d;
-    to.get2dUndistort3dInlierPair_cvPf(p2d,p3d);  ///LK tracking successful and Fundamental matrix check consistent landmark
-//    cv::solvePnPRansac(p3d,p2d,this->d_camera.K0_rect,this->d_camera.D0_rect,
-//                       r_,t_,false,300,3.0,0.99,inliers,cv::SOLVEPNP_P3P);
+#if 0
+        vector<cv::Point2f> p2d_norm;
+        vector<cv::Point2f> p2d_norm_un;
+        to.get2Norm_3d(p2d_norm, p3d);
+        cv::undistortPoints(p2d_norm, p2d_norm_un,
+                            d_camera.K0,d_camera.D0);
+        for(int i = 0; i < p3d.size(); i++)
+        {
+           cout <<  "p2d: " << p2d_norm[i] << " | p2d_norm_un: " << p2d_norm_un[i] <<
+                   " | p3d: " << p3d[i] << endl;
+        }
+#endif
+    to.get2dUndistort3dInlierPair_cvPf(p2d_un, p3d);  ///LK tracking successful and Fundamental matrix check consistent landmark
 
     if(use_guess)
     {
-        SE3_to_rvec_tvec(T_c_w_guess, r_ , t_ );
-        cv::solvePnPRansac(p3d,p2d,this->d_camera.K0_rect,this->d_camera.D0_rect,
-                           r_,t_,false,100,3.0,0.99,inliers,cv::SOLVEPNP_ITERATIVE);
+      SE3_to_rvec_tvec(T_c_w_guess, r_ , t_ );
 
-    }else
-    {
-        cv::solvePnPRansac(p3d,p2d,this->d_camera.K0_rect,this->d_camera.D0_rect,
-                           r_,t_,false,100,3.0,0.99,inliers,cv::SOLVEPNP_P3P);
+      cv::solvePnPRansac(p3d,p2d_un,this->d_camera.K0_rect,this->d_camera.D0_rect,
+                                r_,t_,false, 100, 3.0, 0.99, inliers, cv::SOLVEPNP_ITERATIVE);
     }
-    //cout << "inliers_mask: " << inliers << endl;
+    else
+    {
+     cv::solvePnPRansac(p3d,p2d_un,this->d_camera.K0_rect,this->d_camera.D0_rect,
+                               r_,t_,false, 100, 3.0, 0.99, inliers, cv::SOLVEPNP_P3P);
+    }
 
     ///inlier masks. Transfer from cv::Mat inliers to vector<uchar> mask_pnp_ransac
     int pnp_inlier_cnt=0;
-    for (int i = 0; i < (int)p2d.size(); i++){
+    for (int i = 0; i < (int)p2d_un.size(); i++)
+    {
         mask_pnp_ransac.push_back(0);
     }
-    for( int i = 0; i < inliers.rows; i++){
+
+    for( int i = 0; i < inliers.rows; i++)
+    {
         int n = inliers.at<int>(i);
         mask_pnp_ransac[n] = 1;
         pnp_inlier_cnt++;

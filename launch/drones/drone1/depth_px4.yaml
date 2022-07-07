@@ -9,7 +9,7 @@ type_of_vi: 2
 #depth image is aligned to left cam0
 image_width: 640
 image_height: 360
-cam0_intrinsics: [318.7784118652344, 318.7784118652344, 318.2489013671875, 179.57540893554688]#fx fy cx cy
+cam0_intrinsics: [322.4635009765625, 322.4635009765625, 320.5541687011719, 181.68734741210938]#fx fy cx cy
 cam0_distortion_coeffs: [0.0, 0.0, 0.0, 0.0]#k1 k2 r1 r2
 depth_factor: 1000.0
 T_imu_cam0:
@@ -37,17 +37,17 @@ vifusion_para6: 0.1
 
 #feature relate parameter
 #max features in a grid
-feature_para1: 10
+feature_para1: 30
 #min features in a grid
 feature_para2: 20
 #distance of features
 feature_para3: 3
 #goodFeaturesToTrack detector maxCorners
-feature_para4: 400
+feature_para4: 150
 #goodFeaturesToTrack detector qualityLevel
 feature_para5: 0.01
 #goodFeaturesToTrack detector minDistance
-feature_para6: 5
+feature_para6: 30
 
 #IIR filter ratio
 dr_para1: 0.9
@@ -56,40 +56,3 @@ dr_para2: 20
 #Dummy depth enable 1.0, enable 0.0,disable
 dr_para3: 1.0
 
-#LocalMapThread
-output_sparse_map: False
-window_size:       8
-
-#LoopClosureTheread
-#define lcKFStart
-lcKFStart: 0
-#define lcKFDist
-lcKFDist: 18
-#define lcKFMaxDist
-lcKFMaxDist: 50
-#define lcKFLast
-lcKFLast: 20
-#define lcNKFClosest
-lcNKFClosest: 2
-#define ratioMax
-ratioMax: 0.5
-#define ratioRansac
-ratioRansac: 0.5
-#define minPts
-minPts: 20
-#define minScore
-minScore: 0.05
-
-#Save LoopResult
-ResultPath: "~/LoopPath/"
-EdgeScale: 0.03
-
-#visualization
-saveImage: 1
-
-#ROS Console LEVEL
-#define ROSCONSOLE_SEVERITY_DEBUG 0
-#define ROSCONSOLE_SEVERITY_INFO 1
-#define ROSCONSOLE_SEVERITY_WARN 2
-#define ROSCONSOLE_SEVERITY_ERROR 3
-LogLevel: 1

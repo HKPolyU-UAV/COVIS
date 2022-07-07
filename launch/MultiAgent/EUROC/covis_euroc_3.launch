@@ -2,7 +2,7 @@
 <launch>
 <!--rosbag#####################################################################################################-->
     <param name="/use_sim_time" value="true" />
-    <node pkg="rosbag" type="play" name="rosbag3" args="$(find covis)/bag/EUROC/MH_03_medium.bag --clock -d5 -s0 -r1 /cam0/image_raw:=/Agent2/cam0/image_raw /cam1/image_raw:=/Agent2/cam1/image_raw /imu0:=/Agent2/imu0" />
+    <node pkg="rosbag" type="play" name="rosbag3" args="$(find covis)/bag/EUROC/MH_03_medium.bag --clock -d3 -s0 -r1 /cam0/image_raw:=/Agent2/cam0/image_raw /cam1/image_raw:=/Agent2/cam1/image_raw /imu0:=/Agent2/imu0" />
     <!--    V1_01_easy      -->
     <!--    V1_02_medium    -->
     <!--    V1_03_difficult -->
@@ -19,8 +19,8 @@
 <!--COVIS######################################################################################################-->
 <group ns="Agent2">
     <arg name="node_start_delay" default="0.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/euroc_multi.yaml" />
-    <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3" />
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Client2.yaml" />
+     <param name="/briefpath"      type="string" value="$(find covis)/voc/brief_pattern.yml"/>
     <!-- Agent param -->
     <param name="~AgentId"        type="int"    value="2"/>
     <param name="~AgentFrameId"   type="string" value="odom2" /> 
@@ -28,7 +28,7 @@
     <!--In lite version, the visualization will be simplified -->
 
     <!-- TF  -->
-    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC2_broadcaster" args="20 -15 0 0 0 0 map odom2" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC2_broadcaster" args="20 -20 0 0 0 0 map odom2" />
 
     <!-- Manager -->
     <node pkg="nodelet" type="nodelet"

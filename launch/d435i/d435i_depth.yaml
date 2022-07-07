@@ -44,7 +44,7 @@ feature_para2: 15
 #distance of features
 feature_para3: 5
 #goodFeaturesToTrack detector maxCorners
-feature_para4: 1000
+feature_para4: 500
 #goodFeaturesToTrack detector qualityLevel
 feature_para5: 0.01
 #goodFeaturesToTrack detector minDistance
@@ -58,41 +58,18 @@ dr_para2: 40
 #Dummy depth enable 1.0, enable 0.0,disable
 dr_para3: 1.0
 
-#LocalMapThread
-output_sparse_map: True
-window_size:       8
-
-#LoopClosureTheread
-#define lcKFStart
-lcKFStart: 75
-#define lcKFDist
-lcKFDist: 18
-#define lcKFMaxDist
-lcKFMaxDist: 50
-#define lcKFLast
-lcKFLast: 20
-#define lcNKFClosest
-lcNKFClosest: 2
-#define ratioMax
-ratioMax: 0.5
-#define ratioRansac
-ratioRansac: 0.5
-#define minPts
-minPts: 20
-#define minScore
-minScore: 0.05
-
-#Save LoopResult
-ResultPath: "~/LoopPath/"
-EdgeScale: 0.03
-
-#visualization
-saveImage: 1
+#Keyframe selection criteria
+#parallax
+kf_para1: 15.0
+#translation
+kf_para2: 0.05
+#rotation
+kf_para3: 0.2
 
 #ROS Console LEVEL
 #define ROSCONSOLE_SEVERITY_DEBUG 0
 #define ROSCONSOLE_SEVERITY_INFO 1
 #define ROSCONSOLE_SEVERITY_WARN 2
 #define ROSCONSOLE_SEVERITY_ERROR 3
-LogLevel: 1
+LogLevel: 0
 

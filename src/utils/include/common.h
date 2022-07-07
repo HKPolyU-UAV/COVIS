@@ -17,6 +17,7 @@
 
 #include "../3rdPartLib/Sophus/sophus/so3.h"
 #include "../3rdPartLib/Sophus/sophus/se3.h"
+#include "../3rdPartLib/DLib/DVision/DVision.h"
 
 //#include <g2o/types/sba/types_six_dof_expmap.h>
 #include <g2o/types/slam3d/se3quat.h>
@@ -66,7 +67,7 @@ typedef pcl::PointCloud<PointI> PointCloudI;
 
 
 
-//transfor descriptors to vector of Mat(cv)
+//transfer descriptors to vector of Mat(cv)
 inline void descriptors_to_vecDesciptor(const cv::Mat& descriptors, vector<cv::Mat>& vecDescriptor)
 {
     vecDescriptor.clear();
@@ -82,6 +83,19 @@ inline void vecDesciptor_to_descriptors(const vector<cv::Mat>& vecDescriptor, cv
   {
       descriptors.row(i) = vecDescriptor[i] + 0;// if delete 0, descriptorMat.row(i) will be zeros.
   }
+}
+inline void bitset_to_descriptors(const vector<DVision::BRIEF::bitset>& bitset, cv::Mat& descriptors)
+{
+  for(uint64_t i=0; i<bitset.size();i++)
+  {
+      cv::Mat m (cv::Size(256, 1), CV_8UC1);
+      for(int j = 0; j < 256; j++)
+      {
+         m.at<uchar>(j) = static_cast<uchar>(bitset[i][255-j]);
+      }
+      descriptors.row(i) = m + 0 ;// if delete 0, descriptorMat.row(i) will be zeros.
+  }
+
 }
 
 //transfor 2d point to cvP2f

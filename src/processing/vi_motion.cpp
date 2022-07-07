@@ -23,10 +23,10 @@ VIMOTION::VIMOTION(SE3 T_i_c_fromCalibration,
   this->imu_initialized = false;
   this->is_first_data = true;
 
-//  cout << std::boolalpha << "imu_initialized: " << imu_initialized << endl;
-//  cout << std::boolalpha << "is_first_data: " << is_first_data << endl;
-//  cout << "T_i_c: " << T_i_c << endl;
-//  cout << "T_c_i: " << T_c_i << endl;
+  //  cout << std::boolalpha << "imu_initialized: " << imu_initialized << endl;
+  //  cout << std::boolalpha << "is_first_data: " << is_first_data << endl;
+  //  cout << "T_i_c: " << T_i_c << endl;
+  //  cout << "T_c_i: " << T_c_i << endl;
 
   this->magnitude_g = magnitude_g_in;
   this->gravity = Vec3(0,0,-magnitude_g);
@@ -51,9 +51,7 @@ void VIMOTION::viIMUinitialization(const IMUSTATE imu_read,
                                    Vec3& vel_w_i)
 {
 
-  std::unique_lock<std::mutex> lock(mtx_states_RW);
-  std::thread::id this_id = std::this_thread::get_id();
-  std::cout << " imu thread " << this_id << " imu init ...\n";
+  this->mtx_states_RW.lock();
 
   q_w_i = Quaterniond(1,0,0,0);
   pos_w_i = vel_w_i = Vec3(0,0,0);
@@ -78,7 +76,7 @@ void VIMOTION::viIMUinitialization(const IMUSTATE imu_read,
            << " yaw:"   << rpy[2]*57.2958 << endl;
       this->states.push_back(init_state);
 
-      if(states.size()>=STATES_QUEUE_SIZE) {states.pop_front();}
+      //if(states.size()>=STATES_QUEUE_SIZE) {states.pop_front();}
       this->is_first_data =  false;
       q_w_i = rpy2Q(rpy);
     }
@@ -123,7 +121,7 @@ void VIMOTION::viIMUinitialization(const IMUSTATE imu_read,
     this->init_state.q_w_i = q_new;
     this->states.push_back(init_state);
     Vec3 rpy =  Q2rpy(states.back().q_w_i);
-    if(states.size()>=STATES_QUEUE_SIZE) {states.pop_front();}
+    //if(states.size()>=STATES_QUEUE_SIZE) {states.pop_front();}
     if(states.size()>30)
     {
       Vec3 rpy =  Q2rpy(states.back().q_w_i);
@@ -134,7 +132,7 @@ void VIMOTION::viIMUinitialization(const IMUSTATE imu_read,
       this->imu_initialized = true;
     }//end if IMU init
   }
-  cout << "queue size: " << states.size() << endl;
+  this->mtx_states_RW.unlock();
 }
 /** @brief Reset latest MOTION_STATE and set yaw angle to zero
 @param init_orientation. set initial q_w_i
@@ -143,8 +141,6 @@ void VIMOTION::viVisiontrigger(Quaterniond &init_orientation)
 {
 
   this->mtx_states_RW.lock();
-  std::thread::id this_id = std::this_thread::get_id();
-  std::cout << " imu thread " << this_id << " IMU vitrigger ...\n";
   MOTION_STATE state = this->states.back();
   state.pos = Vec3(0,0,0);
   state.vel = Vec3(0,0,0);
@@ -154,7 +150,7 @@ void VIMOTION::viVisiontrigger(Quaterniond &init_orientation)
   Quaterniond q = rpy2Q(rpy);
   q.normalize();
   state.q_w_i = q;
-  states.clear();
+  //states.clear();
   states.push_back(state);
   this->mtx_states_RW.unlock();
   cout << "Vision Trigger at: "
@@ -162,7 +158,7 @@ void VIMOTION::viVisiontrigger(Quaterniond &init_orientation)
        << " pitch:" << rpy[1]*57.2958
        << " yaw:"   << rpy[2]*57.2958 << endl;
   init_orientation = state.q_w_i;
-  cout << "queue size: " << states.size() << endl;
+  //cout << "queue size: " << states.size() << endl;
 }
 /** @brief IMU propagtion.
 @param imu_read. IMUSTATE readings
@@ -183,8 +179,6 @@ void VIMOTION::viIMUPropagation(const IMUSTATE imu_read,
 
 
   this->mtx_states_RW.lock();
-  std::thread::id this_id = std::this_thread::get_id();
-  std::cout << " imu thread " << this_id << " IMU prop ...\n";
   s_prev = states.back();
   double dt = imu_read.timestamp - s_prev.imu_data.timestamp;
   Quaterniond q_prev = s_prev.q_w_i;
@@ -235,18 +229,19 @@ void VIMOTION::viIMUPropagation(const IMUSTATE imu_read,
   s_new.vel = v_prev+v_dot;
   s_new.imu_data = imu_read;
 
-
   states.push_back(s_new);
-  if(states.size()>=STATES_QUEUE_SIZE) {states.pop_front();}
+  //if(states.size()>=STATES_QUEUE_SIZE) {states.pop_front();}
+
   this->mtx_states_RW.unlock();
   q_w_i   = s_new.q_w_i;
   pos_w_i = s_new.pos;
   vel_w_i = s_new.vel;
-  cout << "queue size: " << states.size() << endl;
+  T_w_i = SE3(q_w_i, pos_w_i);
+  //cout << "queue size: " << states.size() << endl;
 }
-/** @brief Get pose from IMU by left camera timestamp and return T_c_w for helping LK optical tracking.
+/** @brief Get IMU pose by cam0 timestamp and return T_c_w for helping LK optical tracking.
 @param time. Timestamp of cam0
-@param T_c_w. Pose of IMU
+@param T_c_w. Pose of camera guessed by IMU
 */
 bool VIMOTION::viGetCorrFrameState(const double time, SE3 &T_c_w)
 {
@@ -255,8 +250,6 @@ bool VIMOTION::viGetCorrFrameState(const double time, SE3 &T_c_w)
   int  idx;
   MOTION_STATE state;
   this->mtx_states_RW.lock();
-  std::thread::id this_id = std::this_thread::get_id();
-  std::cout << " imu thread " << this_id << " IMU GetCorr ...\n";
   if(this->viFindStateIdx(time,idx))
   {
     state=states.at(idx);
@@ -266,7 +259,6 @@ bool VIMOTION::viGetCorrFrameState(const double time, SE3 &T_c_w)
     ret = true;
   }else
   {
-
     cout << "\033[1;31m No CorrState ... \033[0m" <<endl;
     ret = false;
   }
@@ -288,15 +280,15 @@ void VIMOTION::viVisionRPCompensation(const double time, SE3 &T_c_w)
   {
     rpy_vimotion[2]=rpy_before[2];
     ryp_after = (rpy_before*(1-para_2))+(rpy_vimotion*para_2);
-//    cout << "b-roll :"  << rpy_before[0]*57.2958 << endl
-//         << "b-pitch:"  << rpy_before[1]*57.2958 << endl
-//         << "b-yaw  :"  << rpy_before[2]*57.2958 << endl;
-//    cout << "i-roll :"  << rpy_vimotion[0]*57.2958 << endl
-//         << "i-pitch:"  << rpy_vimotion[1]*57.2958 << endl
-//         << "i-yaw  :"  << rpy_vimotion[2]*57.2958 << endl;
-//    cout << "a-roll :"  << ryp_after[0]*57.2958 << endl
-//         << "a-pitch:"  << ryp_after[1]*57.2958 << endl
-//         << "a-yaw  :"  << ryp_after[2]*57.2958 << endl;
+    //    cout << "b-roll :"  << rpy_before[0]*57.2958 << endl
+    //         << "b-pitch:"  << rpy_before[1]*57.2958 << endl
+    //         << "b-yaw  :"  << rpy_before[2]*57.2958 << endl;
+    //    cout << "i-roll :"  << rpy_vimotion[0]*57.2958 << endl
+    //         << "i-pitch:"  << rpy_vimotion[1]*57.2958 << endl
+    //         << "i-yaw  :"  << rpy_vimotion[2]*57.2958 << endl;
+    //    cout << "a-roll :"  << ryp_after[0]*57.2958 << endl
+    //         << "a-pitch:"  << ryp_after[1]*57.2958 << endl
+    //         << "a-yaw  :"  << ryp_after[2]*57.2958 << endl;
     SE3 T_w_i_after = SE3(SO3(rpy2Q(ryp_after)),T_w_i_before.translation());
     SE3 T_c_w_after= (T_w_i_after*this->T_i_c).inverse();
     T_c_w = T_c_w_after;
@@ -316,8 +308,6 @@ bool VIMOTION::viGetIMURollPitchAtTime(const double time, double &roll, double &
   MOTION_STATE state;
   bool found;
   this->mtx_states_RW.lock();
-  std::thread::id this_id = std::this_thread::get_id();
-  std::cout << " imu thread " << this_id << " RPCompensation viGetIMURollPitchAtTime ...\n";
   int idx;
   if(this->viFindStateIdx(time,idx))
   {
@@ -352,8 +342,6 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
   Vec3 gyro_bias_est=Vec3(0,0,0);
 
   this->mtx_states_RW.lock();
-  std::thread::id this_id = std::this_thread::get_id();
-  std::cout << " imu thread " << this_id << " IMU correct from motion ...\n";
   //TIME A--------------------B(VISION)            B--------------------C
   //     a ------- m -------  b(IMU)            b->B ------- m -------  c
   //     A and a are aligned
@@ -366,10 +354,19 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
   {
     if(idx_last==idx_curr)
     {
+      cout << setprecision(20) << std::fixed << endl;
+      cout << "t_last: " << t_last << endl;
+      cout << "t_curr: " << t_curr << endl;
+      double t_i_last = states.at(idx_last).imu_data.timestamp ;
+      double t_i_curr = states.at(idx_curr).imu_data.timestamp ;
+      cout << "last imu time: " << t_i_last << endl;
+      cout << "curr imu time: " << t_i_curr << endl;
       cout << "\033[1;32m idx_last == idx_curr  \033[0m" << endl;
       this->mtx_states_RW.unlock();
       return;
     }
+
+
     double dt = t_curr-t_last;
     idx_mid = idx_last+floor((idx_curr-idx_last)/2);
 
@@ -411,26 +408,55 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
     acc_bias_est = -(diff_vel_local)/dt;
 
     SE3 T_diff = T_w_iB*(T_w_ib.inverse());
-    for(int i=idx_curr; i<states.size(); i++)
+
+    for(int i=idx_curr; i<(int)states.size(); i++)
     {
       SE3 newT = T_diff*SE3(states.at(i).q_w_i,states.at(i).pos);
       states.at(i).q_w_i = newT.unit_quaternion();
       states.at(i).pos   = newT.translation();
       states.at(i).vel += diff_vel_world;
     }
-//            cout << "V_pre_R: " << (57*Q2rpy(qwi_last_v)).transpose().format(CleanFmt) << endl;
-//            cout << "V_cur_R: " << (57*Q2rpy(qwi_curr_v)).transpose().format(CleanFmt) << endl;
-//            cout << "I_cur_R: " << (57*Q2rpy(qwi_curr_i)).transpose().format(CleanFmt) << endl;
-//            cout << "DR(V-I): " << (57*(Q2rpy(qwi_curr_v)-Q2rpy(qwi_curr_i))).transpose().format(CleanFmt) << endl;
-//            cout << "DR(V-I): " << (57*Q2rpy(dq_vision_imu)).transpose().format(CleanFmt) << endl;
-//            cout << "V_mid_v: " << vwi_mid_v.transpose().format(CleanFmt) << endl;
-//            cout << "I_mid_v: " << vwi_mid_i.transpose().format(CleanFmt) << endl;
-//            cout << "Dv(V-I)_w: " << dv_vision_imu_wf.transpose().format(CleanFmt) << "with norm"  << dv_vision_imu_wf.norm() <<endl;
-//            cout << "Dv(V-I)_i: " << dv_vision_imu_if.transpose().format(CleanFmt) << "with norm"  << dv_vision_imu_if.norm() <<endl;
-//            cout << "V_mid_R: " << (57*Q2rpy(qwi_mid_v)).transpose().format(CleanFmt) << endl;
-//            cout << "I_mid_R: " << (57*Q2rpy(qwi_mid_i)).transpose().format(CleanFmt) << endl;
-//            cout << "Ba_est : " << acc_bias_est.transpose().format(CleanFmt) << endl;
-//            cout << "Bg_est : " << gyro_bias_est.transpose().format(CleanFmt) << endl;
+
+    //cout << setprecision(20) << std::fixed << endl;
+    //cout << "before states size: " << states.size() << endl;
+    double t_i_curr = states.at(idx_curr).imu_data.timestamp ;
+    double t_i_last = states.at(idx_last).imu_data.timestamp ;
+    //cout << "t_i_last : " << t_i_last << " t_last: " << t_last << " t_i_curr: " << t_i_curr << " t_curr: " << t_curr << endl;
+
+#if 0
+    string file_path = "/home/yurong/new_ws/src/CO-VISLAM/results/timestamp.csv";
+    std::ofstream foutC(file_path, ios::app);
+    foutC.setf(ios::fixed, ios::floatfield);
+    foutC.precision(20);
+    foutC << t_i_last  << "," << t_last << "," << t_i_curr  << "," << t_curr << endl;
+    foutC.close();
+#endif
+
+    int i = 0;
+    while(states.front().imu_data.timestamp < t_i_curr)
+    {
+      states.pop_front();
+      i++;
+      //cout << "pop: " << i << endl;
+    }
+//    cout << "after pop states size: " << states.size() << endl;
+//    cout << "front time: " << states.front().imu_data.timestamp << endl;
+//    cout << "back time: " << states.back().imu_data.timestamp << endl;
+
+
+    //            cout << "V_pre_R: " << (57*Q2rpy(qwi_last_v)).transpose().format(CleanFmt) << endl;
+    //            cout << "V_cur_R: " << (57*Q2rpy(qwi_curr_v)).transpose().format(CleanFmt) << endl;
+    //            cout << "I_cur_R: " << (57*Q2rpy(qwi_curr_i)).transpose().format(CleanFmt) << endl;
+    //            cout << "DR(V-I): " << (57*(Q2rpy(qwi_curr_v)-Q2rpy(qwi_curr_i))).transpose().format(CleanFmt) << endl;
+    //            cout << "DR(V-I): " << (57*Q2rpy(dq_vision_imu)).transpose().format(CleanFmt) << endl;
+    //            cout << "V_mid_v: " << vwi_mid_v.transpose().format(CleanFmt) << endl;
+    //            cout << "I_mid_v: " << vwi_mid_i.transpose().format(CleanFmt) << endl;
+    //            cout << "Dv(V-I)_w: " << dv_vision_imu_wf.transpose().format(CleanFmt) << "with norm"  << dv_vision_imu_wf.norm() <<endl;
+    //            cout << "Dv(V-I)_i: " << dv_vision_imu_if.transpose().format(CleanFmt) << "with norm"  << dv_vision_imu_if.norm() <<endl;
+    //            cout << "V_mid_R: " << (57*Q2rpy(qwi_mid_v)).transpose().format(CleanFmt) << endl;
+    //            cout << "I_mid_R: " << (57*Q2rpy(qwi_mid_i)).transpose().format(CleanFmt) << endl;
+    //            cout << "Ba_est : " << acc_bias_est.transpose().format(CleanFmt) << endl;
+    //            cout << "Bg_est : " << gyro_bias_est.transpose().format(CleanFmt) << endl;
 
     if(isnan(acc_bias_est(0)))
     {
@@ -471,11 +497,11 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
   }
   else
   {
-     cout << "\033[1;31m No Correction ... \033[0m" <<endl;
+    cout << "\033[1;31m No Correction ... \033[0m" <<endl;
   }
 
   this->mtx_states_RW.unlock();
-  cout << "queue size: " << states.size() << endl;
+
 
 }
 
@@ -486,56 +512,83 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
 @param time. Timestamp
 @param idx_in_q. index of state in deque
 */
-bool VIMOTION::viFindStateIdx(const double time, int& idx_in_q)
+bool VIMOTION::viFindStateIdx(const double curr_time, int& idx_in_q)
 {
+
+  //cout << setprecision(20) << std::fixed << endl;
+//  cout << "cam time  :" << curr_time << endl;
+//  cout << "front time :" << states.front().imu_data.timestamp << endl;
+//  cout << "back time :" << states.back().imu_data.timestamp << endl;
+
   bool ret;
-  int idx=9999;
-  cout << "vifind queue size: " << states.size() << endl;
+  int idx;
+
+  //cout << "queue size: " << states.size() << endl;
+while(1)
+{
+  if (!states.empty() && curr_time <= states.back().imu_data.timestamp)
   {
-    if (!states.empty() && time <= states.back().imu_data.timestamp)
+    //cout << "\033[1;32m t_curr < t_back ... \033[0m" << endl;
+    break;
+  }
+  else
+  {
+    if(states.empty())
     {
-      cout << "\033[1;32m t_curr < t_back ... \033[0m" << endl;
+      cout << "\033[1;32m no imu input... \033[0m" << endl;
+      return false;
     }
     else
     {
       cout << "\033[1;32m wait for imu... \033[0m" << endl;
-      std::chrono::milliseconds dura(5);
-      std::this_thread::sleep_for(dura);
+      this->mtx_states_RW.unlock();
     }
 
+    //cout << "\033[1;32m queue size: \033[0m" << states.size() << endl;
+//    cout << "\033[1;32m curr: \033[0m" << curr_time << endl;
+//    cout << "\033[1;32m back: \033[0m" << states.back().imu_data.timestamp << endl;
+
+    std::chrono::milliseconds dura(5);
+    std::this_thread::sleep_for(dura);
   }
 
+}
+  //cout << "sync queue size: " << states.size() << endl;
   for(int i=states.size()-1; i>=0; i--)
   {
-    if((states.at(i).imu_data.timestamp-time)>0)
+
+    if(states.at(i).imu_data.timestamp <= curr_time) // t_imu ~<= t_cam
     {
       idx = i;
-    }
-    else
-    {
-      idx = i;
+//      cout << setprecision(20) << std::fixed << endl;
+//      cout << "find idx: " << idx << endl;
+//      cout << "cam time  :" << curr_time << endl;
+//      cout << "imu time  :" << this->states.at(idx).imu_data.timestamp << endl;
+
       break;
     }
+
   }
 
-  if(idx>0 && idx!=9999)
+  if(idx>=0)
   {
     idx_in_q = idx;
 //    cout << "idx in queue:" << idx << endl;
-//    cout << "      time  :" << this->states.at(idx).imu_data.timestamp << endl;
+//    cout << "time  :" << this->states.at(idx).imu_data.timestamp << endl;
     ret = true;
   }
   else
   {
     // IMU has no enough motion, query camera time < first IMU time
-    cout << "idx: " << idx << endl;
     cout << "\033[1;31m [Critical Warning]: motion not in queue! please enlarge the buffer size... \033[0m" << endl;
+    cout << "idx: " << idx << endl;
     cout << " queue size:" << states.size()
-         << " querry time:" << std::setprecision (15) << time
+         << " querry time:" << std::setprecision (15) << curr_time
          << " q begin:" << this->states.front().imu_data.timestamp
          << " q end  :" << this->states.back().imu_data.timestamp << endl;
     ret = false;
   }
+
   return ret;
 }
 

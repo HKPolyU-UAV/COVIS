@@ -8,7 +8,7 @@
 class LandMark
 {
 public:
-  int64_t lm_id;
+  uint64_t lm_id;
   Vec3    lm_3d_w;
 
   LandMark();
@@ -20,7 +20,7 @@ class LandMarkInFrame : public LandMark
 public:
     Vec2 lm_2d_plane;
     Vec2 lm_2d_undistort;
-    Vec3 lm_3d_c;      //land mark 3d in camera frame
+    Vec3 lm_3d_c;      //landmark 3d in camera frame
     bool has_3d;
     bool is_belong_to_kf;
     bool is_tracking_inlier;

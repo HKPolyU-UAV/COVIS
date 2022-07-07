@@ -20,8 +20,11 @@ struct MOTION_STATE{
 class VIMOTION
 {
 public:
+    typedef std::shared_ptr <VIMOTION> Ptr;
+
     SE3  T_i_c;//transformation from camera frame to imu frame
     SE3  T_c_i;
+    SE3  T_w_i = SE3(); // pose of IMU in world frame by IMU propogation
     double para_1;//Madgwick beta
     double para_2;//proportion of vision feedforware(roll and pich)
     double para_3;//acc-bias feedback parameter

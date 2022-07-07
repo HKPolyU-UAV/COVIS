@@ -2,7 +2,7 @@
 <launch>
 <!--rosbag#####################################################################################################-->
     <param name="/use_sim_time" value="true" />
-    <node pkg="rosbag" type="play" name="rosbag2" args="$(find covis)/bag/EUROC/MH_02_easy.bag --clock -d5 -s0 -r2 /cam0/image_raw:=/Agent1/cam0/image_raw /cam1/image_raw:=/Agent1/cam1/image_raw /imu0:=/Agent1/imu0 /leica/position:=/Agent1/leica/position" />
+    <node pkg="rosbag" type="play" name="rosbag2" args="$(find covis)/bag/EUROC/MH_02_easy.bag --clock -d0 -s0 -r1 /cam0/image_raw:=/Agent1/cam0/image_raw /cam1/image_raw:=/Agent1/cam1/image_raw /imu0:=/Agent1/imu0 /leica/position:=/Agent1/leica/position" />
     <!--    V1_01_easy      -->
     <!--    V1_02_medium    -->
     <!--    V1_03_difficult -->
@@ -19,8 +19,8 @@
 <!--COVIS######################################################################################################-->
 <group ns="Agent1">
     <arg name="node_start_delay" default="0.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/EUROC.yaml" />
-    <param name="/voc"            type="string" value="$(find covis)/voc/voc_orb.dbow3" />
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Client1.yaml" />
+    <param name="/briefpath"      type="string" value="$(find covis)/voc/brief_pattern.yml"/>
     <!-- Agent param -->
     <param name="~AgentId"        type="int"    value="1"/>
     <param name="~AgentFrameId"   type="string" value="odom1" /> 

@@ -68,6 +68,7 @@ public:
     Vec3 pixel2worldT_c_w( const Vec2& p_p, const SE3& T_c_w, double depth=1 );
     Vec2 world2pixelT_c_w( const Vec3& p_w, const SE3& T_c_w );
 
+    Vec2 pixel2norm(const Vec2& p_p);
 
 
 

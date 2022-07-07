@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-
-<!--Input######################################################################################################-->
-<include file="$(find covis)/launch/MultiAgent/multi_bag/covis_bag_0.launch"/>-->
-<include file="$(find covis)/launch/MultiAgent/multi_bag/covis_bag_1.launch"/>-->
-<!--include file="$(find covis)/launch/MultiAgent/multi_bag/covis_bag_2.launch"/>-->
-</launch>

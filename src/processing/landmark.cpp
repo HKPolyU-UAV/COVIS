@@ -26,7 +26,7 @@ LandMarkInFrame::LandMarkInFrame(const Vec2 pt2d,
 
   lm_2d_plane = pt2d; // used for recover 3Dpts
   lm_1st_obs_2d = lm_2d_undistort = pt2d_undist;
-  lm_1st_obs_frame_pose =T_c_w;
+  lm_1st_obs_frame_pose = T_c_w;
   is_tracking_inlier = is_inlier;
   is_belong_to_kf = false;
 

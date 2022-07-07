@@ -7,7 +7,7 @@
 #include <include/triangulation.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/video/tracking.hpp>
-
+#include <algorithm>
 class CameraFrame
 {
 public:
@@ -60,7 +60,6 @@ public:
     void forceMarkOutlier( const int& cnt, const vector<int64_t>& ids);
     void markAsKF(void);
     int  coVisKFCnt(void);
-
     //outlier from ransac pnp
     void updateLMState(vector<uchar> status);
 
@@ -70,13 +69,15 @@ public:
                                        vector<cv::Point2f>& p2d_u,
                                        vector<cv::Point3f>& p3d);
     void get2dUndistort3dInlierPair_cvPf(vector<cv::Point2f>& p2d,vector<cv::Point3f>& p3d);
+    void get2Norm_3d(vector<cv::Point2f>& p2d_norm,vector<cv::Point3f>& p3d);
     void getValidInliersPair(vector<LandMarkInFrame> &lms);
 
-    void getKeyFrameInf(vector<int64_t>& lm_id, vector<Vec2>& lm_2d, vector<Vec3>& lm_3d);
+    void getKeyFrameInf(vector<int64_t>& lm_id, vector<Vec2>& lm_2d, vector<Vec3>& lm_3d_c);
     vector<cv::Point2f> get2dPlaneVec_cvPf(void);
     vector<Vec2> get2dPlaneVec(void);
     vector<Vec3> getValid3dPts(void);
     vector<Vec2> getTrackingOutlierVec(void);
+    void calMeanParallax(const CameraFrame::Ptr last_keyframe, int & num_coLM, double & mean_parallax);
 
     friend ostream& operator<<(std::ostream & os, const CameraFrame & frame);
 private:

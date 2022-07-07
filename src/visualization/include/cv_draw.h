@@ -49,7 +49,8 @@ inline void drawFlow(cv::Mat& img, const vector<cv::Point2f>& from, const vector
         for(size_t i=0; i<from.size(); i++)
         {
             cv::circle(img, from.at(i), 1, cv::Scalar( 0, 255, 0 ), 1);
-            cv::line  (img, from.at(i), to.at(i), cv::Scalar( 0,204,204),1);
+            //cv::line  (img, from.at(i), to.at(i), cv::Scalar( 0,204,204),1);
+            cv::arrowedLine(img, from.at(i), to.at(i), cv::Scalar(0, 255, 0), 1, 4);
         }
     }
 }
@@ -79,7 +80,7 @@ inline void drawFrame(cv::Mat& img, CameraFrame& frame, int min, int max)
             int r=255-b;
             // lm_2d_plane 2-D keypoint
             cv::Point pt(round(lm.lm_2d_plane[0]),round(lm.lm_2d_plane[1]));
-            cv::circle(img, pt, 3, cv::Scalar( b, 0, r ), 3);
+            cv::circle(img, pt, 3, cv::Scalar( b, 0, r ), 1);
 //            if(lm.is_belong_to_kf)
 //            {
 //                cv::circle(img, pt, 3, cv::Scalar( b, 0, r ), 4);
@@ -111,7 +112,7 @@ inline void visualizeDepthImg(cv::Mat& visualized_depth, CameraFrame& frame)
     cv::Mat adjMap;
     d_img.convertTo(adjMap,CV_8UC1, 255 / (10000.0), 0);
 
-    cv::applyColorMap(adjMap, visualized_depth, cv::COLORMAP_RAINBOW);
+    cv::applyColorMap(adjMap, visualized_depth, cv::COLORMAP_HSV);
     for(int i=0; i<size; i++)
     {
         if(d_img.at<ushort>(i)==0)

@@ -30,11 +30,13 @@ RVIZMesh::RVIZMesh(ros::NodeHandle& nh,
   mesh_pub = nh.advertise<visualization_msgs::Marker>("/Agent" + to_string(this->AgentId_) + topicName, bufferSize);
   is_Server = false;
 
+
 }
 
 
 void RVIZMesh::PubT_w_c(SE3 cam_pose, ros::Time time, size_t AgentId)
 {
+
   visualization_msgs::MarkerArray marker_array;
   visualization_msgs::Marker marker;
   //marker.header
@@ -51,7 +53,7 @@ void RVIZMesh::PubT_w_c(SE3 cam_pose, ros::Time time, size_t AgentId)
     marker.id = this->AgentId_;  //unique identifier of drone
 
   marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-  marker.mesh_resource = "file:///home/yurong/new_ws/src/CO-VISLAM/models/hummingbird.mesh";
+  marker.mesh_resource = "package://covis/models/hummingbird.mesh";
 
   marker.action = visualization_msgs::Marker::ADD;
 
@@ -135,7 +137,7 @@ void RVIZMesh::PubT_w_i(SE3 drone_pose, ros::Time time, size_t AgentId)
     marker.id = this->AgentId_;  //unique identifier of drone
 
   marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-  marker.mesh_resource = "file:///home/yurong/new_ws/src/CO-VISLAM/models/hummingbird.mesh";
+  marker.mesh_resource = "package://covis/models/hummingbird.mesh";
 
   marker.action = visualization_msgs::Marker::ADD;
 

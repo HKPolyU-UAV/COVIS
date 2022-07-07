@@ -5,10 +5,9 @@
 #include "include/lkorb_tracking.h"
 #include "include/camera_frame.h"
 #include "include/vi_motion.h"
-#include "include/keyframe_msg.h"
 #include "include/correction_inf_msg.h"
 #include "include/optimize_in_frame.h"
-
+#define KEYFRAME_QUEUE_SIZE     (8)
 using namespace std::chrono;
 using namespace cv;
 
@@ -28,11 +27,15 @@ public:
   //Modules
   FeatureDEM         *feature_dem;
   LKORBTracking      *lkorb_tracker;
-  VIMOTION           *vimotion;
+  //VIMOTION           *vimotion;
+  VIMOTION::Ptr       vimotion;
   DepthCamera         d_camera;
   float iir_ratio;
   float range;
   bool  enable_dummy;
+  double minParallax;
+  double minTranslation;
+  double minRotation;
 
   //states:
   bool has_imu;
@@ -47,6 +50,8 @@ public:
   SE3 T_c_w_last_keyframe;
   deque<ID_POSE> pose_records;
   CameraFrame::Ptr curr_frame,last_frame;
+  CameraFrame::Ptr keyframe;
+  std::queue <CameraFrame::Ptr> keyframe_buf;
   std::mutex m_buf;
 
   void init(const DepthCamera dc_in,
@@ -54,6 +59,7 @@ public:
             const Vec6 feature_para,
             const Vec6 vi_para,
             const Vec3 dr_para,
+            const Vec3 kf_para,
             const int skip_first_n_imgs_in,
             const bool need_equal_hist_in
             );
@@ -75,7 +81,6 @@ public:
 
 private:
   bool init_frame(void);
-
 };//class F2FTracking
 
 #endif

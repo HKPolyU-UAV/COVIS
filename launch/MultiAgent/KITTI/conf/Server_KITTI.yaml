@@ -1,0 +1,46 @@
+# Client config file
+C0_param: "Client0.yaml"
+C1_param: "Client1.yaml"
+C2_param: "Client2.yaml"
+
+#LocalMapThread
+output_sparse_map: True
+window_size:       8
+
+#LoopClosureTheread
+#define lcKFStart
+lcKFStart: 0
+#define lcKFDist
+lcKFDist: 18
+#define lcKFMaxDist
+lcKFMaxDist: 50
+#define lcKFLast
+lcKFLast: 20
+#define lcNKFClosest
+lcNKFClosest: 2
+#define ratioMax
+ratioMax: 0.5
+#define ratioRansac
+ratioRansac: 0.5
+#define minPts
+minPts: 20
+#define minScore
+minScore: 0.05
+
+#Save LoopResult
+ResultPath: "~/LoopPath/"
+
+#visualization
+saveImage: 1
+
+#IntraLoop
+IntraLoop: True
+EdgeScale: 10
+
+#ROS Console LEVEL
+#define ROSCONSOLE_SEVERITY_DEBUG 0
+#define ROSCONSOLE_SEVERITY_INFO 1
+#define ROSCONSOLE_SEVERITY_WARN 2
+#define ROSCONSOLE_SEVERITY_ERROR 3
+LogLevel: 0
+
