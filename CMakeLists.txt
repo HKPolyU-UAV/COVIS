@@ -17,7 +17,7 @@ find_package (Eigen3 REQUIRED)
 find_package (CSparse REQUIRED )
 find_package (Sophus REQUIRED )
 find_package (yaml-cpp REQUIRED )
-#find_package (DBoW3 REQUIRED)
+
 # pcl
 find_package( PCL REQUIRED)
 include_directories( ${PCL_INCLUDE_DIRS} )
@@ -72,7 +72,6 @@ include_directories(
     ${CSPARSE_INCLUDE_DIR}
     ${Sophus_INCLUDE_DIRS}
     ${YAML_CPP_INCLUDE_DIR}
-    #${DBoW3_INCLUDE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/3rdPartLib/DBow2/"
     "${CMAKE_CURRENT_SOURCE_DIR}/3rdPartLib/DLib/"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/"
@@ -153,7 +152,6 @@ target_link_libraries(covis
     ${CSPARSE_LIBRARY}
     ${Sophus_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
-    #${DBoW3_LIBRARIES}
     ${G2O_LIBS}
     ${PCL_LIBRARIES}
     ${Boost_SYSTEM_LIBRARY}
