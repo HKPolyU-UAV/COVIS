@@ -25,10 +25,10 @@
 
 #include "../../DLib/DUtils/DUtils.h"
 
-// Added by VINS [[[
+// Added by COVIS [[[
 #include "../VocabularyBinary.hpp"
 #include <boost/dynamic_bitset.hpp>
-// Added by VINS ]]]
+// Added by COVIS ]]]
 
 namespace DBoW2 {
 
@@ -257,9 +257,9 @@ public:
   virtual void load(const cv::FileStorage &fs, 
     const std::string &name = "vocabulary");
     
-  // Added by VINS [[[
+  // Added by COVIS [[[
   virtual void loadBin(const std::string &filename);
-  // Added by VINS ]]]
+  // Added by COVIS ]]]
     
   /** 
    * Stops those words whose weight is below minWeight.
@@ -434,10 +434,10 @@ TemplatedVocabulary<TDescriptor,F>::TemplatedVocabulary
   (const std::string &filename): m_scoring_object(NULL)
 {
     //m_scoring = KL;
-    // Changed by VINS [[[
+    // Changed by COVIS [[[
     //printf("loop start load bin\n");
     loadBin(filename);
-    // Changed by VINS ]]]
+    // Changed by COVIS ]]]
 }
 
 // --------------------------------------------------------------------------
@@ -447,10 +447,10 @@ TemplatedVocabulary<TDescriptor,F>::TemplatedVocabulary
   (const char *filename): m_scoring_object(NULL)
 {
     //m_scoring = KL;
-    // Changed by VINS [[[
+    // Changed by COVIS [[[
     //printf("loop start load bin\n");
     loadBin(filename);
-    // Changed by VINS ]]]
+    // Changed by COVIS ]]]
 }
 
 // --------------------------------------------------------------------------
@@ -514,7 +514,7 @@ TemplatedVocabulary<TDescriptor,F>::TemplatedVocabulary(
   const TemplatedVocabulary<TDescriptor, F> &voc)
   : m_scoring_object(NULL)
 {
-  printf("loop start load vocabulary\n");
+  printf("loop start load vocabulary \n");
   *this = voc;
 }
 
@@ -1504,7 +1504,7 @@ void TemplatedVocabulary<TDescriptor,F>::load(const cv::FileStorage &fs,
   }
 }
     
-// Added by VINS [[[
+// Added by COVIS [[[
 template<class TDescriptor, class F>
 void TemplatedVocabulary<TDescriptor,F>::loadBin(const std::string &filename) {
     
@@ -1512,7 +1512,7 @@ void TemplatedVocabulary<TDescriptor,F>::loadBin(const std::string &filename) {
   m_nodes.clear();
   //printf("loop load bin\n");
   std::ifstream ifStream(filename);
-  VINSLoop::Vocabulary voc;
+  COVISLoop::Vocabulary voc;
   voc.deserialize(ifStream);
   ifStream.close();
   
@@ -1560,7 +1560,7 @@ void TemplatedVocabulary<TDescriptor,F>::loadBin(const std::string &filename) {
   }
 }
     
-// Added by VINS ]]]
+// Added by COVIS ]]]
 
 // --------------------------------------------------------------------------
 

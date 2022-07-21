@@ -12,6 +12,7 @@ set(G2O_ROOT /usr/local/include/g2o)
 find_package(G2O REQUIRED) 
 
 find_package (OpenCV 3 REQUIRED)
+# message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
 find_package (Eigen3 REQUIRED)
 
 find_package (CSparse REQUIRED )
@@ -19,9 +20,9 @@ find_package (Sophus REQUIRED )
 find_package (yaml-cpp REQUIRED )
 
 # pcl
-find_package( PCL REQUIRED)
-include_directories( ${PCL_INCLUDE_DIRS} )
-add_definitions( ${PCL_DEFINITIONS} )
+#find_package( PCL REQUIRED)
+#include_directories( ${PCL_INCLUDE_DIRS} )
+#add_definitions( ${PCL_DEFINITIONS} )
 
 #FIND_PACKAGE(octomap REQUIRED )
 #FIND_PACKAGE(octovis REQUIRED )
@@ -173,5 +174,19 @@ target_link_libraries(kitti_publisher
     ${catkin_LIBRARIES}
     ${Sophus_LIBRARIES})
 
-
+#add_executable(create
+#    src/test/create_voc.cpp
+#)
+#target_link_libraries(create
+#    ${OpenCV_LIBRARIES}
+    #${DBoW3_LIBRARIES}
+#)
+add_executable(se3
+    src/test/se3.cpp
+    src/visualization/rviz_pose.cpp)
+target_link_libraries(se3
+    ${OpenCV_LIBRARIES}
+    ${G2O_LIBS}
+    ${catkin_LIBRARIES}
+    ${Sophus_LIBRARIES})
 

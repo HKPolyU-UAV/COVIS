@@ -222,7 +222,14 @@ int main(int argc, char **argv)
     nh.getParam("repub_type",       repub_type);
     nh.getParam("repub_topic",      repub_topic);
     nh.getParam("output_file_path", output_file_path);
-    cout << output_file_path << endl;
+    cout << "sub_type " << sub_type << endl;
+    cout << "sub_topic " << sub_topic << endl;
+    cout << "repub_type " << repub_type << endl;
+    cout << "repub_topic " << repub_topic << endl;
+
+
+
+    cout << "SAVE output file to " << output_file_path << endl;
     if(output_file_path=="0")
     {
         enable_output_file = false;

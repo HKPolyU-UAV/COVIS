@@ -188,7 +188,7 @@ void KeyFrameMsgHandler::ProcessKeyFramemsg(covis::KeyFrame& msg, const cv::Mat&
 
   auto end = chrono::high_resolution_clock::now();
   auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
-  ROS_DEBUG("\033[1;32m fast feature detection time: %f s \033[0m \n", (duration.count()/1000.0));
+  //ROS_DEBUG("fast feature detection time: %f s \n", (duration.count()/1000.0));
 
   for (size_t i = 0; i <keypoints.size(); i++)
   {

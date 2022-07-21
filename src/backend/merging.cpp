@@ -21,7 +21,7 @@ Merging::Merging(ros::NodeHandle &nh, LC_PARAS &paras, const vector<DepthCamera>
   ROS_WARN("d_cameras: %lu ", d_cameras.size());
   string vocFile;
   nh.getParam("/voc", vocFile);
-  cout << "voc file: " << vocFile << endl;
+  ROS_WARN("voc file: %s ", vocFile.c_str());
   voc = new BriefVocabulary(vocFile);
   db.setVocabulary(*voc, false, 0);
 
@@ -152,7 +152,7 @@ void Merging::setKeyFrame(const covis::KeyFrameConstPtr& msg)
   }
 #endif
   m_vector.unlock();
-  ROS_DEBUG("\033[1;31m msg time: %lf \033[0m", msg_tic.dT_ms());
+  //ROS_DEBUG("\033[1;31m msg time: %lf \033[0m", msg_tic.dT_ms());
 
 
 }
@@ -174,7 +174,7 @@ void Merging::runLC()
       tic_toc_ros t_detect;
       int loop_index = -1;
       loop_index = AddandDetectLoop(kf_ptr);
-      ROS_DEBUG("\033[1;32m detect time: %lf \033[0m ", t_detect.dT_ms());
+      //ROS_DEBUG("\033[1;32m detect time: %lf \033[0m ", t_detect.dT_ms());
 
       if(loop_index != -1)
       {
@@ -182,7 +182,7 @@ void Merging::runLC()
         tic_toc_ros t_match;
         SE3 loop_pose;
         bool is_lc = isLoopClosureKF(kfs_all.at(loop_index), kf_ptr, loop_pose);
-        ROS_DEBUG("\033[1;34m match time: %lf \033[0m ", t_match.dT_ms());
+        //ROS_DEBUG("\033[1;34m match time: %lf \033[0m ", t_match.dT_ms());
 
         if(is_lc)
         {
@@ -231,12 +231,12 @@ int Merging::AddandDetectLoop(shared_ptr<KeyFrameMerge> kf)
   db.query(kf->lm_2d_post_descriptor, ret, 4, kf->keyframe_id - 50);
 //  cout << "query: " << endl;
 //  cout << ret << endl;
-  ROS_DEBUG("\033[1;32m query time: %lf \033[0m ", t_query.dT_ms());
+  //ROS_DEBUG("\033[1;32m query time: %lf \033[0m ", t_query.dT_ms());
 
   tic_toc_ros t_add;
 
   db.add(kf->lm_2d_post_descriptor);
-  ROS_DEBUG("\033[1;32m add time: %lf \033[0m ", t_add.dT_ms());
+  //ROS_DEBUG("\033[1;32m add time: %lf \033[0m ", t_add.dT_ms());
 
   //m_db.unlock();
 
@@ -371,7 +371,7 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf_old, shared_ptr<KeyFr
   //printf("\033[1;34m vio brief size: %lu \033[0m  \n", kf_cur->lm_2d_descriptor.size());
   //printf("\033[1;34m fast brief size: %lu \033[0m  \n", kf_old->lm_2d_post_descriptor.size());
   //printf("\033[1;34m total num : %lu \033[0m  \n", kf_cur->lm_2d_descriptor.size() * kf_old->lm_2d_post_descriptor.size());
-  ROS_DEBUG("\033[1;34m search time: %lf \033[0m ", t_search.dT_ms());
+  //ROS_DEBUG("\033[1;34m search time: %lf \033[0m ", t_search.dT_ms());
 #if 0
   if(t_search.dT_ms() >= 30.0)
   {
@@ -479,7 +479,7 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf_old, shared_ptr<KeyFr
     cv::solvePnPRansac(matched_3d, matched_2d_old, d_cameras[cam_id].K0_rect, d_cameras[cam_id].D0_rect,
                          r_, t_, false, 100, 2.0, 0.99, inliers, cv::SOLVEPNP_P3P);
 
-    ROS_DEBUG("\033[1;34m ransac time: %lf \033[0m ", t_ransac.dT_ms());
+    //ROS_DEBUG("\033[1;34m ransac time: %lf \033[0m ", t_ransac.dT_ms());
 
 
     for(int i = 0; i < matched_2d_old.size(); i++)
@@ -568,7 +568,10 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf_old, shared_ptr<KeyFr
       ///publish loop closure frame
       cv::Mat img_0 = kf_cur->img0;
       cv::Mat img_1 = kf_old->img0;
-
+      if(img_0.size != img_1.size)
+      {
+         cout << "hconcat cannot be used " << endl;
+      }
       int gap = 20;
       int offset = img_0.cols + gap;
 
@@ -608,7 +611,7 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf_old, shared_ptr<KeyFr
       cv::putText(info, "current frame: " + to_string(kf_cur->keyframe_id) + " Agent: " + to_string(kf_cur->AgentId_), cv::Point2f(20, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,255,0), 3);
       cv::putText(info, "previous frame: " + to_string(kf_old->keyframe_id) + " Agent: " + to_string(kf_old->AgentId_), cv::Point2f(20 + offset, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,255,0), 3);
       cv::vconcat(info, out_img, out_img);
-#if 0
+#if 1
       std::string save_path;
       save_path = "/home/yurong/Loop/COVIS/loop/"
           + to_string(kf_cur->keyframe_id) + "-" + to_string(kf_old->keyframe_id) + "_3loop.png";
@@ -1040,7 +1043,7 @@ void Merging::PoseGraphOptimization()
   optimizer.computeActiveErrors();
   optimizer.optimize(5);
 
-  //optimizer.save("/home/yurong/covis_after.g2o");
+  optimizer.save("/home/yurong/covis_after.g2o");
 
 
   m_vector.lock();

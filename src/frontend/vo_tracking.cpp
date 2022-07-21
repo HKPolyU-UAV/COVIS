@@ -115,7 +115,7 @@ private:
     //Publisher
     frame_pub_agent = new RVIZFrame(nh,"/vo_camera_pose","/vo_curr_frame", AgentId_, AgentFrameId);
     vision_path_pub = new RVIZPath(nh,"/vision_path", AgentId_, AgentFrameId);    // pub vio path
-    path_lc_pub     = new RVIZPath(nh,"/vision_path_lc", AgentId_, AgentFrameId);
+    //path_lc_pub     = new RVIZPath(nh,"/vision_path_lc", AgentId_, AgentFrameId);
     pose_imu_pub    = new RVIZPose(nh,"/imu_pose", AgentId_, AgentFrameId);   // pub imu pose
     odom_imu_pub    = new RVIZOdom(nh,"/imu_odom", AgentId_, AgentFrameId);   // pub imu odom
     path_imu_pub    = new RVIZPath(nh,"/imu_path", AgentId_, AgentFrameId);   // pub imu path
@@ -130,7 +130,7 @@ private:
 
     //Load Parameter
     string configFilePath;
-    nh.getParam("/yamlconfigfile",   configFilePath);
+    nh.getParam("/Agent" +to_string(AgentId_) + "/yamlconfigfile",   configFilePath);
     ROS_WARN_STREAM("VO YAML configFilePath: " << configFilePath);
 
     auto severity = getIntVariableFromYaml(configFilePath, "LogLevel");
@@ -512,20 +512,20 @@ private:
               vision_path_pub->pubPathT_c_w(this->cam_tracker->curr_frame->T_c_w, tstamp, AgentId_);
 
 
-              SE3 T_map_c =SE3();
-              try{
-                listenerOdomMap.lookupTransform("map","odom",ros::Time(0), tranOdomMap);
-                tf::Vector3 tf_t= tranOdomMap.getOrigin();
-                tf::Quaternion tf_q = tranOdomMap.getRotation();
-                SE3 T_map_odom(Quaterniond(tf_q.w(),tf_q.x(),tf_q.y(),tf_q.z()),
-                               Vec3(tf_t.x(),tf_t.y(),tf_t.z()));
-                T_map_c = T_map_odom*this->cam_tracker->curr_frame->T_c_w.inverse();
-                path_lc_pub->pubPathT_w_c(T_map_c,tstamp, AgentId_);
-              }
-              catch (tf::TransformException ex)
-              {
-                //cout<<"no transform between map and odom yet."<<endl;
-              }
+//              SE3 T_map_c =SE3();
+//              try{
+//                listenerOdomMap.lookupTransform("map","odom",ros::Time(0), tranOdomMap);
+//                tf::Vector3 tf_t= tranOdomMap.getOrigin();
+//                tf::Quaternion tf_q = tranOdomMap.getRotation();
+//                SE3 T_map_odom(Quaterniond(tf_q.w(),tf_q.x(),tf_q.y(),tf_q.z()),
+//                               Vec3(tf_t.x(),tf_t.y(),tf_t.z()));
+//                T_map_c = T_map_odom*this->cam_tracker->curr_frame->T_c_w.inverse();
+//                path_lc_pub->pubPathT_w_c(T_map_c,tstamp, AgentId_);
+//              }
+//              catch (tf::TransformException ex)
+//              {
+//                //cout<<"no transform between map and odom yet."<<endl;
+//              }
               if(!is_lite_version)
               {
                 cvtColor(cam_tracker->curr_frame->img0,img0_vis,CV_GRAY2BGR);

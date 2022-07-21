@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<launch>
+<!--rosbag#####################################################################################################-->
+    <param name="/use_sim_time" value="true" />
+    <node pkg="rosbag" type="play" name="rosbag4" args="$(find covis)/bag/EUROC/MH_04_difficult.bag --clock -d0 -s0 -r2 /cam0/image_raw:=/Agent3/cam0/image_raw /cam1/image_raw:=/Agent3/cam1/image_raw /imu0:=/Agent3/imu0" />
+    <!--    V1_01_easy      -->
+    <!--    V1_02_medium    -->
+    <!--    V1_03_difficult -->
+    <!--    V2_01_easy      -->
+    <!--    V2_02_medium    -->
+    <!--    V2_03_difficult -->
+    <!--    MH_01_easy      -->
+    <!--    MH_02_easy      -->
+    <!--    MH_03_medium    -->
+    <!--    MH_04_difficult -->
+    <!--    MH_05_difficult -->
+
+
+<!--COVIS######################################################################################################-->
+<group ns="Agent3">
+    <arg name="node_start_delay" default="0.0" />
+    <param name="yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Client3.yaml" />
+    <param name="/briefpath"      type="string" value="$(find covis)/voc/brief_pattern.yml"/>
+    <!-- Agent param -->
+    <param name="~AgentId"        type="int"    value="3"/>
+    <param name="~AgentFrameId"   type="string" value="odom3" /> 
+    <param name="~MapTopicName"   type="string" value="Map3"/>
+    <!--In lite version, the visualization will be simplified -->
+
+    <!-- TF  -->
+    <node pkg="tf2_ros" type="static_transform_publisher" name="linkC3_broadcaster" args="-20 20 0 0 0 0 map odom3" />
+
+    <!-- Manager -->
+    <node pkg="nodelet" type="nodelet"
+          name="covis_nodelet_manager" args="manager" output="screen"
+          launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+          <param name="num_worker_threads" value="1" />
+    </node>
+
+    <!-- TrackingNode -->
+    <node pkg="nodelet" type="nodelet" args="load covis/TrackingNodeletClass covis_nodelet_manager"
+          name="TrackingNodeletClass_loader" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+        <!-- remap EuRoC_MAV input -->
+        <remap from="/vo/input_image_0" to="/Agent3/cam0/image_raw" />
+        <remap from="/vo/input_image_1" to="/Agent3/cam1/image_raw" />
+        <remap from="/imu" to="/Agent3/imu0" />
+        <!-- remap output -->
+        <!--<remap from="imu_pose" to="/mavros/vision_pose/pose"/>-->
+        <!--<remap from="imu_odom" to="/covis/imu_odom"/>-->
+        <!--<remap from="imu_path" to="/covis/imu_path"/>-->
+    </node>
+
+
+<!--output######################################################################################################-->
+    <node pkg="covis" type="vo_repub_rec" name="euroc2file" output="screen">
+        <!--Sub Support Type:-->
+        <!--"TransformStamped"-->
+        <!--"PointStamped"-->
+        <!--"PoseStamped"-->
+        <!--<param name="sub_type" type="string" value="PoseStamped" />
+        <param name="sub_topic" type="string" value="/imu_pose" />-->
+        <!--For EuRoC_MAV V* Dataset-->
+        <!--<param name="sub_type" type="string" value="TransformStamped" />
+        <param name="sub_topic" type="string" value="/vicon/firefly_sbx/firefly_sbx" />-->
+        <!--For EuRoC_MAV MH* Dataset-->
+        <param name="sub_type" type="string" value="PointStamped" />
+        <param name="sub_topic" type="string" value="/leica/position" />
+
+        <!--Support Type:-->
+        <!--"0" disable the republish function -->
+        <!--"Path"-->
+        <!--"PoseStamped"-->
+        <param name="repub_type" type="string" value="0" />
+        <param name="repub_topic" type="string" value="/republish_path" />
+        <!--output_file_path = "0" disable the file output function-->
+        <param name="output_file_path" type="string" value="$(find covis)/results/euroc_gt.txt" />
+    </node>
+
+    <node pkg="covis" type="vo_repub_rec" name="vo2file" output="screen">
+        <!--Sub Support Type:-->
+        <!--"TransformStamped"-->
+        <!--"PointStamped"-->
+        <!--"PoseStamped"-->
+        <param name="sub_type" type="string" value="PoseStamped" />
+        <param name="sub_topic" type="string" value="/imu_pose" />
+        <!--For EuRoC_MAV V* Dataset-->
+        <!--<param name="sub_type" type="string" value="TransformStamped" />
+        <param name="sub_topic" type="string" value="/vicon/firefly_sbx/firefly_sbx" />-->
+        <!--For EuRoC_MAV MH* Dataset-->
+        <!--<param name="sub_type" type="string" value="PointStamped" />
+        <param name="sub_topic" type="string" value="/leica/position" />-->
+
+        <!--Support Type:-->
+        <!--"0" disable the republish function -->
+        <!--"Path"-->
+        <!--"PoseStamped"-->
+        <param name="repub_type" type="string" value="0" />
+        <param name="repub_topic" type="string" value="/republish_path" />
+        <!--output_file_path = "0" disable the file output function-->
+        <param name="output_file_path" type="string" value="$(find covis)/results/est.txt" />
+    </node> 
+
+ </group>
+</launch>

@@ -60,11 +60,11 @@ feature_para2: 20
 #distance of features
 feature_para3: 5
 #goodFeaturesToTrack detector maxCorners
-feature_para4: 500
+feature_para4: 1000
 #goodFeaturesToTrack detector qualityLevel
 feature_para5: 0.01
 #goodFeaturesToTrack detector minDistance
-feature_para6: 15
+feature_para6: 5
 
 
 #depth recovery

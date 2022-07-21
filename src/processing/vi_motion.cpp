@@ -50,7 +50,7 @@ void VIMOTION::viIMUinitialization(const IMUSTATE imu_read,
                                    Vec3& pos_w_i,
                                    Vec3& vel_w_i)
 {
-
+  //cout << "viIMUinitialization" << endl;
   this->mtx_states_RW.lock();
 
   q_w_i = Quaterniond(1,0,0,0);
@@ -139,7 +139,7 @@ void VIMOTION::viIMUinitialization(const IMUSTATE imu_read,
 */
 void VIMOTION::viVisiontrigger(Quaterniond &init_orientation)
 {
-
+  //cout << "viVisiontrigger " << endl;
   this->mtx_states_RW.lock();
   MOTION_STATE state = this->states.back();
   state.pos = Vec3(0,0,0);
@@ -171,7 +171,7 @@ void VIMOTION::viIMUPropagation(const IMUSTATE imu_read,
                                 Vec3& pos_w_i,
                                 Vec3& vel_w_i)
 {
-
+  //cout << "viIMUPropagation" << endl;
   MOTION_STATE s_prev,s_new;//previous state and new state
   Vec3 acc, gyro;
   acc =  imu_read.acc_raw  - acc_bias;
@@ -245,7 +245,7 @@ void VIMOTION::viIMUPropagation(const IMUSTATE imu_read,
 */
 bool VIMOTION::viGetCorrFrameState(const double time, SE3 &T_c_w)
 {
-
+  //cout << "viGetCorrFrameState" << endl;
   bool ret;
   int  idx;
   MOTION_STATE state;
@@ -271,7 +271,7 @@ bool VIMOTION::viGetCorrFrameState(const double time, SE3 &T_c_w)
 */
 void VIMOTION::viVisionRPCompensation(const double time, SE3 &T_c_w)
 {
-
+  //cout << "viVisionRPCompensation" << endl;
   Vec3 rpy_before, rpy_vimotion, ryp_after;//ryp_w_c
   SE3 T_c_w_before = T_c_w;
   SE3 T_w_i_before = (T_c_w_before.inverse())*this->T_c_i;
@@ -336,7 +336,7 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
                                       const double t_last, const SE3 Tcw_last,
                                       const double err)
 {
-
+  //cout << "viCorrectionFromVision " << endl;
   Eigen::IOFormat CleanFmt(3, 0, ", ", "\n", "[", "]");
   Vec3 acc_bias_est=Vec3(0,0,0);
   Vec3 gyro_bias_est=Vec3(0,0,0);
@@ -352,6 +352,10 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
           viFindStateIdx(t_last, idx_last)
           &&viFindStateIdx(t_curr, idx_curr))
   {
+    //cout << "states size: " << states.size() << endl;
+    //cout << "idx_last: " << idx_last << endl;
+    //cout << "idx_curr: " << idx_curr << endl;
+
     if(idx_last==idx_curr)
     {
       cout << setprecision(20) << std::fixed << endl;
@@ -435,6 +439,7 @@ void VIMOTION::viCorrectionFromVision(const double t_curr, const SE3 Tcw_curr,
     int i = 0;
     while(states.front().imu_data.timestamp < t_i_curr)
     {
+      //cout << "state size" << states.size() << endl;
       states.pop_front();
       i++;
       //cout << "pop: " << i << endl;

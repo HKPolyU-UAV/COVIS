@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-namespace VINSLoop {
+namespace COVISLoop {
     
 struct Node {
     int32_t nodeId;

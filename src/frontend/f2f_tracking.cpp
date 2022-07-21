@@ -83,8 +83,9 @@ void F2FTracking::image_feed(const double time,
   auto start = high_resolution_clock::now();
   new_keyframe = false;
   reset_cmd = false;
+
   frameCount++;
-  cout << "frameCount: " << frameCount << endl;
+  //cout << "frameCount: " << frameCount << endl;
   last_frame.swap(curr_frame);
 
   curr_frame->clear();
@@ -203,6 +204,7 @@ void F2FTracking::image_feed(const double time,
   }
   case Tracking:
   {
+#if 0
     //STEP1: Recover from LocalMap Feedback msg
     if(has_localmap_feedback)  ///default: false
     {
@@ -234,6 +236,7 @@ void F2FTracking::image_feed(const double time,
       last_frame->forceMarkOutlier(correction_inf.lm_outlier_count,correction_inf.lm_outlier_id);
       has_localmap_feedback = false;
     }
+#endif
 
     //STEP2: Track from frame to frame PnP
     SE3  imu_guess;
@@ -365,7 +368,7 @@ void F2FTracking::image_feed(const double time,
     double t_norm = fabs(t[0]) + fabs(t[1]) + fabs(t[2]);
     double r_norm = fabs(r[0]) + fabs(r[1]) + fabs(r[2]);
     //if(frameCount < 40 && (frameCount%5)==0)
-    if(frameCount < 200 && (frameCount % 5) == 0) // only for EUROC and KITTI
+    if(frameCount < 40 && (frameCount % 5) == 0) // only for EUROC and KITTI
     {
       new_keyframe = true;
       T_c_w_last_keyframe = curr_frame->T_c_w;
@@ -381,7 +384,8 @@ void F2FTracking::image_feed(const double time,
       double mean_parallax = 0.0;
       int num_of_covisible_landmark = 0;
       curr_frame->calMeanParallax(kf_last, num_of_covisible_landmark, mean_parallax);
-      if(num_of_covisible_landmark == 0)
+      //if(num_of_covisible_landmark == 0)
+      if(num_of_covisible_landmark < 0.2 * curr_frame->flow_curr.size())
       {
         new_keyframe = true;
         //cout << "no coLM " << endl;
@@ -406,6 +410,17 @@ void F2FTracking::image_feed(const double time,
         }
 
       }
+//      if(t_norm>=minTranslation || r_norm>=minRotation)
+//      {
+//        new_keyframe = true;
+//        //cout << "parallax large " << endl;
+//        T_c_w_last_keyframe = curr_frame->T_c_w;
+//        keyframe = std::make_shared<CameraFrame> (*curr_frame);
+//        keyframe_buf.push(keyframe);
+//        //cout << "keyfame " << keyframe_buf.size() <<  endl;
+//        //string kf_path = "/home/yurong/Loop/COVIS/keyfame/" + to_string(keyframe->frame_id) +".jpg";
+//        //cv::imwrite(kf_path,keyframe->img0);
+//      }
       if(new_keyframe)
       {
         keyframe_buf.pop();

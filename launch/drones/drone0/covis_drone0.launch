@@ -36,7 +36,7 @@
         <remap from="/vo/input_image_0"  to="/Agent0/camera/infra1/image_rect_raw"/> 
         <remap from="/vo/input_image_1"  to="/Agent0/camera/infra2/image_rect_raw"/>-->
         <!-- remap PIXHAWK input -->
-        <remap from="/imu"             to="/Agent0/mavros/imu/data_raw"/> -->
+        <!--<remap from="/imu"             to="/Agent0/mavros/imu/data_raw"/> -->
         <!-- remap output -->
         <!--<remap from="imu_pose" to="/mavros/vision_pose/pose"/> -->
         <!--<remap from="imu_odom" to="/covis/imu_odom"/>-->

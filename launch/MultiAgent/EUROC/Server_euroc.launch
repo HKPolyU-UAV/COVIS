@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <launch>
 
+    <param name="/use_sim_time" value="true" />
 <!--COVIS######################################################################################################-->
 <group ns="Server">
     <arg name="node_start_delay"  default="1.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Server_EUROC.yaml"/>
+    <param name="yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Server_EUROC.yaml"/>
     <param name="/voc"            type="string" value="$(find covis)/voc/brief_k10L6.bin"/>  
-    <param name="/ClientNum"      type="int"    value="3"/>
+    <param name="/ClientNum"      type="int"    value="5"/>
     <!-- Manager -->
     <node pkg="nodelet" type="nodelet"
           name="covis_nodelet_manager" args="manager" output="screen"
@@ -19,5 +20,60 @@
         name="MergingNodeletClass_loader" output="screen"
         launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
     </node>-->
+
+<!--output######################################################################################################-->
+    <node pkg="covis" type="vo_repub_rec" name="lc2file0" output="screen">-->
+        <!--Sub Support Type:-->
+        <!--"TransformStamped"-->
+        <!--"PointStamped"-->
+        <!--"PoseStamped"-->
+        <param name="sub_type" type="string" value="NavPath" />
+        <param name="sub_topic" type="string" value="/Server/global_path_0" />-->
+
+        <!--Support Type:-->
+        <!--"0" disable the republish function -->
+        <!--"Path"-->
+        <!--"PoseStamped"-->
+        <param name="repub_type" type="string" value="0" />
+        <param name="repub_topic" type="string" value="ph" />-->
+        <!--output_file_path = "0" disable the file output function-->
+        <param name="output_file_path" type="string" value="$(find covis)/results/MH01_LC.txt" />
+    </node> -->
+
+    <node pkg="covis" type="vo_repub_rec" name="lc2file1" output="screen">-->
+        <!--Sub Support Type:-->
+        <!--"TransformStamped"-->
+        <!--"PointStamped"-->
+        <!--"PoseStamped"-->
+        <param name="sub_type" type="string" value="NavPath" />
+        <param name="sub_topic" type="string" value="/Server/global_path_1" />-->
+
+        <!--Support Type:-->
+        <!--"0" disable the republish function -->
+        <!--"Path"-->
+        <!--"PoseStamped"-->
+        <param name="repub_type" type="string" value="0" />
+        <param name="repub_topic" type="string" value="ph" />-->
+        <!--output_file_path = "0" disable the file output function-->
+        <param name="output_file_path" type="string" value="$(find covis)/results/MH02_LC.txt" />
+    </node> -->
+
+    <node pkg="covis" type="vo_repub_rec" name="lc2file2" output="screen">-->
+        <!--Sub Support Type:-->
+        <!--"TransformStamped"-->
+        <!--"PointStamped"-->
+        <!--"PoseStamped"-->
+        <param name="sub_type" type="string" value="NavPath" />
+        <param name="sub_topic" type="string" value="/Server/global_path_2" />-->
+
+        <!--Support Type:-->
+        <!--"0" disable the republish function -->
+        <!--"Path"-->
+        <!--"PoseStamped"-->
+        <param name="repub_type" type="string" value="0" />
+        <param name="repub_topic" type="string" value="ph" />-->
+        <!--output_file_path = "0" disable the file output function-->
+        <param name="output_file_path" type="string" value="$(find covis)/results/MH03_LC.txt" />
+    </node> -->
   </group>
 </launch>

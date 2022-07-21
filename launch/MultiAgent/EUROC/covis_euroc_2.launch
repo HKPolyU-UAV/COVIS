@@ -2,7 +2,7 @@
 <launch>
 <!--rosbag#####################################################################################################-->
     <param name="/use_sim_time" value="true" />
-    <node pkg="rosbag" type="play" name="rosbag2" args="$(find covis)/bag/EUROC/MH_02_easy.bag --clock -d0 -s0 -r1 /cam0/image_raw:=/Agent1/cam0/image_raw /cam1/image_raw:=/Agent1/cam1/image_raw /imu0:=/Agent1/imu0 /leica/position:=/Agent1/leica/position" />
+    <node pkg="rosbag" type="play" name="rosbag2" args="$(find covis)/bag/EUROC/MH_02_easy.bag --clock -d15 -s0 -r2 /cam0/image_raw:=/Agent1/cam0/image_raw /cam1/image_raw:=/Agent1/cam1/image_raw /imu0:=/Agent1/imu0 /leica/position:=/Agent1/leica/position" />
     <!--    V1_01_easy      -->
     <!--    V1_02_medium    -->
     <!--    V1_03_difficult -->
@@ -19,7 +19,7 @@
 <!--COVIS######################################################################################################-->
 <group ns="Agent1">
     <arg name="node_start_delay" default="0.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Client1.yaml" />
+    <param name="yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/EUROC/conf/Client1.yaml" />
     <param name="/briefpath"      type="string" value="$(find covis)/voc/brief_pattern.yml"/>
     <!-- Agent param -->
     <param name="~AgentId"        type="int"    value="1"/>
@@ -34,7 +34,7 @@
     <node pkg="nodelet" type="nodelet"
           name="covis_nodelet_manager" args="manager" output="screen"
           launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
-          <param name="num_worker_threads" value="4" />
+          <param name="num_worker_threads" value="1" />
     </node>
 
     <!-- TrackingNode -->
@@ -63,7 +63,7 @@
         <!--<param name="sub_type" type="string" value="TransformStamped" />
         <param name="sub_topic" type="string" value="/vicon/firefly_sbx/firefly_sbx" />-->
         <!--For EuRoC_MAV MH* Dataset-->
-        <param name="sub_type" type="string" value="PointStamped" />
+        <param name="sub_type" type="string" value="PointStamped" /> 
         <param name="sub_topic" type="string" value="/Agent1/leica/position" />
 
         <!--Support Type:-->
@@ -71,28 +71,28 @@
         <!--"Path"-->
         <!--"PoseStamped"-->
         <param name="repub_type" type="string" value="0" />
-        <param name="repub_topic" type="string" value="/republish_path" />
+        <param name="repub_topic" type="string" value="/Agent1/GT" />
         <!--output_file_path = "0" disable the file output function-->
         <param name="output_file_path" type="string" value="$(find covis)/results/MH02_gt.txt" />
     </node>
 
-    <node pkg="covis" type="vo_repub_rec" name="lc2file" output="screen">
+    <node pkg="covis" type="vo_repub_rec" name="lc2file" output="screen">-->
         <!--Sub Support Type:-->
         <!--"TransformStamped"-->
         <!--"PointStamped"-->
         <!--"PoseStamped"-->
-        <param name="sub_type" type="string" value="NavPath" />
-        <param name="sub_topic" type="string" value="/global_path_1" />
+        <param name="sub_type" type="string" value="PoseStamped" />
+        <param name="sub_topic" type="string" value="/Agent1/imu_pose" />-->
 
         <!--Support Type:-->
         <!--"0" disable the republish function -->
         <!--"Path"-->
         <!--"PoseStamped"-->
         <param name="repub_type" type="string" value="0" />
-        <param name="repub_topic" type="string" value="/republish_path" />
+        <param name="repub_topic" type="string" value="/Agent1/republish_path" />-->
         <!--output_file_path = "0" disable the file output function-->
-        <param name="output_file_path" type="string" value="$(find covis)/results/Global_2.txt" />
-    </node> 
+        <param name="output_file_path" type="string" value="$(find covis)/results/MH02_vio.txt" />
+    </node> -->
 
  </group>
 </launch>

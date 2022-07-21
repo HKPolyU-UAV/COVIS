@@ -62,7 +62,7 @@ void RVIZMesh::PubT_w_c(SE3 cam_pose, ros::Time time, size_t AgentId)
   marker.scale.y = scale;
   marker.scale.z = scale;
 
-  std_msgs::ColorRGBA white, green, red, yellow, blue;
+  std_msgs::ColorRGBA white, green, red, yellow, blue, orange;
   white.r = 1.0;
   white.g = 1.0;
   white.b = 1.0;
@@ -88,6 +88,11 @@ void RVIZMesh::PubT_w_c(SE3 cam_pose, ros::Time time, size_t AgentId)
   yellow.b = 0.0;
   yellow.a = 1.0;
 
+  orange.r = 1.0;
+  orange.g = 0.5;
+  orange.b = 0.0;
+  orange.a = 1.0;
+
   if(marker.id == 0)
   {
     marker.color = red;
@@ -103,6 +108,10 @@ void RVIZMesh::PubT_w_c(SE3 cam_pose, ros::Time time, size_t AgentId)
   else if(marker.id == 3)
   {
     marker.color = yellow;
+  }
+  else if(marker.id == 4)
+  {
+    marker.color = orange;
   }
 
   Vec3 t = cam_pose.translation();;
@@ -146,7 +155,7 @@ void RVIZMesh::PubT_w_i(SE3 drone_pose, ros::Time time, size_t AgentId)
   marker.scale.y = scale;
   marker.scale.z = scale;
 
-  std_msgs::ColorRGBA white, green, red, yellow, blue;
+  std_msgs::ColorRGBA white, green, red, yellow, blue, orange;
   white.r = 1.0;
   white.g = 1.0;
   white.b = 1.0;
@@ -172,6 +181,11 @@ void RVIZMesh::PubT_w_i(SE3 drone_pose, ros::Time time, size_t AgentId)
   yellow.b = 0.0;
   yellow.a = 1.0;
 
+  orange.r = 1.0;
+  orange.g = 0.5;
+  orange.b = 0.0;
+  orange.a = 1.0;
+
   if(marker.id == 0)
   {
     marker.color = red;
@@ -187,6 +201,10 @@ void RVIZMesh::PubT_w_i(SE3 drone_pose, ros::Time time, size_t AgentId)
   else if(marker.id == 3)
   {
     marker.color = yellow;
+  }
+  else if(marker.id == 4)
+  {
+    marker.color = orange;
   }
 
   Vec3 t = drone_pose.translation();;

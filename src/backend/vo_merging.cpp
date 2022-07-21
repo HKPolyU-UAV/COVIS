@@ -66,7 +66,7 @@ private:
 
     // Server data
     string configFilePath;
-    nh.getParam("/yamlconfigfile", configFilePath);
+    nh.getParam("/Server/yamlconfigfile", configFilePath);
     nh.getParam("/ClientNum", ClientNum);
     ROS_WARN("ClientNum: %d ", ClientNum);
     ROS_WARN_STREAM("Server YAML configFilePath: " << configFilePath);
@@ -85,7 +85,7 @@ private:
     lc_paras.minScore     = getDoubleVariableFromYaml(configFilePath,"minScore");
     int saveImage         = getIntVariableFromYaml(configFilePath, "saveImage");
     IntraLoop             = getBoolVariableFromYaml(configFilePath, "IntraLoop");
-    string result_path           = getstringVariableFromYaml(configFilePath, "ResultPath");
+    string result_path    = getstringVariableFromYaml(configFilePath, "ResultPath");
 
     std::vector<string> ResultPaths;
     for (int i=0; i<ClientNum; i++)

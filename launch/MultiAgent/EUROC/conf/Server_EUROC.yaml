@@ -2,6 +2,8 @@
 C0_param: "Client0.yaml"
 C1_param: "Client1.yaml"
 C2_param: "Client2.yaml"
+C3_param: "Client3.yaml"
+C4_param: "Client4.yaml"
 
 #LocalMapThread
 output_sparse_map: True
@@ -34,7 +36,7 @@ ResultPath: "~/LoopPath/"
 saveImage: 1
 
 #IntraLoop
-IntraLoop: False
+IntraLoop: True
 EdgeScale: 0.03
 
 #ROS Console LEVEL
@@ -42,5 +44,5 @@ EdgeScale: 0.03
 #define ROSCONSOLE_SEVERITY_INFO 1
 #define ROSCONSOLE_SEVERITY_WARN 2
 #define ROSCONSOLE_SEVERITY_ERROR 3
-LogLevel: 1
+LogLevel: 0
 

@@ -14,10 +14,10 @@ cam0_intrinsics: [318.9233703613281, 318.9233703613281, 321.3755187988281, 179.5
 cam0_distortion_coeffs: [0.0, 0.0, 0.0, 0.0]#k1 k2 r1 r2
 depth_factor: 1000.0
 T_imu_cam0:
-[ -0.08003882,  0.01761342,  0.99663612, 0.12268334,
-  -0.99628563, -0.03327134, -0.07942267, 0.0124343,
-   0.03176051, -0.99929114,  0.02021099, 0.0031378,
-          0.0,         0.0,         0.0,        1.0]
+[ 0.0,  0.0,  1.0, 0.12268334,
+ -1.0,  0.0,  0.0, 0.0124343,
+  0.0, -1.0,  0.0, 0.0031378,
+  0.0,  0.0,  0.0, 1.0]
 
 is_lite_version:   False
 
@@ -48,7 +48,7 @@ feature_para4: 150
 #goodFeaturesToTrack detector qualityLevel
 feature_para5: 0.01
 #goodFeaturesToTrack detector minDistance
-feature_para6: 30
+feature_para6: 5
 
 #IIR filter ratio
 dr_para1: 0.9

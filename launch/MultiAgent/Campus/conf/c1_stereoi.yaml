@@ -50,11 +50,11 @@ feature_para2: 30
 #distance of features
 feature_para3: 5
 #goodFeaturesToTrack detector maxCorners
-feature_para4: 150
+feature_para4: 1000
 #goodFeaturesToTrack detector qualityLevel
 feature_para5: 0.01
 #goodFeaturesToTrack detector minDistance
-feature_para6: 30
+feature_para6: 5
 
 #IIR filter ratio
 dr_para1: 0.9

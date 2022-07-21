@@ -13,7 +13,7 @@ RVIZEdge::~RVIZEdge(){
 RVIZEdge::RVIZEdge(ros::NodeHandle& nh, string topicName, string GlobalframeId, int bufferSize)
 {
     string configFilePath;
-    nh.getParam("/yamlconfigfile", configFilePath);
+    nh.getParam("/Server/yamlconfigfile", configFilePath);
     marker_scale     = getDoubleVariableFromYaml(configFilePath, "EdgeScale");
     edge_pub = nh.advertise<visualization_msgs::MarkerArray>(topicName, bufferSize);
     this->GlobalframeId = GlobalframeId;

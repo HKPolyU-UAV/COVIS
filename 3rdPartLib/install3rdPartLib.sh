@@ -24,3 +24,12 @@ cd build
 cmake ..
 make -j4
 sudo make install
+
+cd ../..
+
+cd DBow3
+mkdir build
+cd build
+cmake ..
+make -j4
+sudo make install

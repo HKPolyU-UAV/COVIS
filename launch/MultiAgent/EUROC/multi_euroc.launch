@@ -2,7 +2,7 @@
 <launch>
 
 <!--Input######################################################################################################-->
-<include file="$(find covis)/launch/MultiAgent/multi_euroc/covis_euroc_1.launch"/>-->
-<include file="$(find covis)/launch/MultiAgent/multi_euroc/covis_euroc_2.launch"/>-->
-<!--include file="$(find covis)/launch/MultiAgent/multi_euroc/covis_euroc_3.launch"/>-->
+<include file="$(find covis)/launch/MultiAgent/EUROC/covis_euroc_1.launch"/>-->
+<include file="$(find covis)/launch/MultiAgent/EUROC/covis_euroc_2.launch"/>-->
+<include file="$(find covis)/launch/MultiAgent/EUROC/covis_euroc_3.launch"/>-->
 </launch>

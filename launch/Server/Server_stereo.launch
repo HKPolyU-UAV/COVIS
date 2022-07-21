@@ -4,7 +4,7 @@
 <!--COVIS######################################################################################################-->
 <group ns="Server">
     <arg name="node_start_delay"  default="1.0" />
-    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/Bag/conf/Server_bag.yaml"/>
+    <param name="/yamlconfigfile" type="string" value="$(find covis)/launch/MultiAgent/Campus/conf/Server_bag.yaml"/>
     <param name="/voc"            type="string" value="$(find covis)/voc/brief_k10L6.bin"/>  
     <param name="/ClientNum"      type="int"    value="2"/>
     <!-- Manager -->
