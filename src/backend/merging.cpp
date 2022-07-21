@@ -69,6 +69,7 @@ Merging::~Merging()
 
 void Merging::setKeyFrame(const covis::KeyFrameConstPtr& msg)
 {
+
   tic_toc_ros msg_tic;
   //STEP1.1 Unpack
   // [1]kf.frame_id
@@ -76,7 +77,7 @@ void Merging::setKeyFrame(const covis::KeyFrameConstPtr& msg)
 
   KeyFrameMerge kf;
 
-  cv::Mat img0, img1_unpack;
+  //cv::Mat img0, img1_unpack;
   //vector<int64_t> lm_id_unpack;
 //  vector<Vec2> lm_2d_unpack, lm_2d_post_unpack;
 //  vector<Vec3> lm_3d_unpack;
@@ -107,6 +108,7 @@ void Merging::setKeyFrame(const covis::KeyFrameConstPtr& msg)
   idpair idp = make_pair(kf.AgentId_, kf.keyframe_id);
   idpairImg.insert(make_pair(idp, kf.img0));
   m_imgs.unlock();
+
 
 
   //STEP1.4 Construct KeyFrameLC
@@ -153,6 +155,7 @@ void Merging::setKeyFrame(const covis::KeyFrameConstPtr& msg)
 #endif
   m_vector.unlock();
   //ROS_DEBUG("\033[1;31m msg time: %lf \033[0m", msg_tic.dT_ms());
+
 
 
 }
@@ -560,7 +563,7 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf_old, shared_ptr<KeyFr
 
   }
 
-//#if 0
+#if 0
   if(is_lc)
   {
     if(SAVE_IMG)
@@ -611,7 +614,7 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf_old, shared_ptr<KeyFr
       cv::putText(info, "current frame: " + to_string(kf_cur->keyframe_id) + " Agent: " + to_string(kf_cur->AgentId_), cv::Point2f(20, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,255,0), 3);
       cv::putText(info, "previous frame: " + to_string(kf_old->keyframe_id) + " Agent: " + to_string(kf_old->AgentId_), cv::Point2f(20 + offset, 30), cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0,255,0), 3);
       cv::vconcat(info, out_img, out_img);
-#if 1
+#if 0
       std::string save_path;
       save_path = "/home/yurong/Loop/COVIS/loop/"
           + to_string(kf_cur->keyframe_id) + "-" + to_string(kf_old->keyframe_id) + "_3loop.png";
@@ -624,7 +627,7 @@ bool Merging::isLoopClosureKF(shared_ptr<KeyFrameMerge> kf_old, shared_ptr<KeyFr
 
     }
   }
-//# endif
+# endif
   return is_lc;
 
 }

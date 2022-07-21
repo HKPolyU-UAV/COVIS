@@ -156,7 +156,7 @@ void KeyFrameMsgHandler::ProcessKeyFramemsg(covis::KeyFrame& msg, const cv::Mat&
   cv_bridge::CvImage cvimg0(std_msgs::Header(), "mono8", img0);
   try
   {
-    if(1)
+    if(0)
       cvimg0.toImageMsg(msg.img0);
   }
   catch (cv_bridge::Exception& e)
@@ -312,7 +312,7 @@ void KeyFrameMsgHandler::unpack(covis::KeyFrameConstPtr kf_const_ptr,
   lm_2d_descriptor.clear();
   lm_2d_post_descriptor.clear();
 
-  if(1){
+  if(0){
       cv_bridge::CvImagePtr cvbridge_image  = cv_bridge::toCvCopy(kf_const_ptr->img0, kf_const_ptr->img0.encoding);
       img0 = cvbridge_image->image;
   }

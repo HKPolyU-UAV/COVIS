@@ -5,7 +5,7 @@
 #include <iostream>
 #include <utility>
 #include <opencv2/features2d/features2d.hpp>
-
+#include <opencv2/imgproc/types_c.h>
 /* Feature Detector--------Region Based FAST Detector
  *         Extractor-------ORB descriptor
  *         Match Checker---Check by ORB distance

@@ -32,6 +32,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <boost/dynamic_bitset.hpp>
+#include <opencv2/imgproc/types_c.h>
 
 namespace DVision {
 
