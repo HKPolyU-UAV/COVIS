@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(covis)
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 #set(CMAKE_CXX_FLAGS "-std=c++11)
-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} -O3 -Wall -pthread") # -Wextra -Werror
+set(CMAKE_CXX_FLAGS "-std=c++14 ${CMAKE_CXX_FLAGS} -O3 -Wall -pthread") # -Wextra -Werror
 set(CMAKE_BUILD_TYPE "RELEASE")
 
 
@@ -11,7 +11,7 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rdPartLib/g2o/cmake_m
 set(G2O_ROOT /usr/local/include/g2o)
 find_package(G2O REQUIRED) 
 
-find_package (OpenCV 3 REQUIRED)
+find_package (OpenCV REQUIRED)
 # message(WARNING "OpenCV_VERSION: ${OpenCV_VERSION}")
 find_package (Eigen3 REQUIRED)
 
