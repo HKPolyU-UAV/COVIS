@@ -1,4 +1,4 @@
-sudo apt-get install cmake libeigen3-dev libsuitesparse-dev libqt4-dev qt4-qmake -y
+sudo apt-get install cmake libeigen3-dev libsuitesparse-dev libqt4-dev qt4-qmake -y &&
 
 cd yaml-cpp-0.6.2
 mkdir build
@@ -25,11 +25,5 @@ cmake ..
 make -j4
 sudo make install
 
-cd ../..
 
-cd DBow3
-mkdir build
-cd build
-cmake ..
-make -j4
-sudo make install
+
