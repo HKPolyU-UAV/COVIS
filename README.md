@@ -136,6 +136,7 @@ roslaunch covis covis_kitti.launch
 ````
 
 ### Maintainer:
-[Shengyang Chen](https://www.polyu.edu.hk/researchgrp/cywen/index.php/en/people/alumni.html)(Dept.ME,PolyU): shengyang.chen@connect.polyu.hk <br />
 [Yurong Feng](https://www.polyu.edu.hk/researchgrp/cywen/index.php/en/people/current-members.html)(Dept.AAE,PolyU): yu-rong.feng@connect.polyu.hk <br />
+[Shengyang Chen](https://www.polyu.edu.hk/researchgrp/cywen/index.php/en/people/alumni.html)(Dept.ME,PolyU): shengyang.chen@connect.polyu.hk <br />
+
 
