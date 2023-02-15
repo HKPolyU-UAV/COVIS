@@ -18,7 +18,7 @@ Ubuntu 16.04 + ROS Kinetic <br />
 Ubuntu 18.04 + ROS melodic <br />
 Clone the repository to the catkin work space eg. `/catkin_ws/src`
 ````
-git clone https://github.com/HKPolyU-UAV/COVIS.git
+git clone https://github.com/PAIR-Lab/COVIS.git
 ````
 Install 3rd Part library
 ````
